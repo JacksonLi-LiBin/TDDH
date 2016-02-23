@@ -62,4 +62,27 @@ public class ProductDaoImpl implements ProductDao {
 		}
 	}
 
+	@Override
+	public double getProductOrderPrice(int product_id, int proxy_id) {
+		Connection conn = null;
+		try {
+			conn = DBConnectionUtils.getConnection();
+			ProxyProductModel proxyProductModel = queryRunner.query(conn,
+					PropertiesUtils.readProperties("sql", "load_product_by_proxy"),
+					new BeanHandler<ProxyProductModel>(ProxyProductModel.class), product_id, proxy_id);
+			return proxyProductModel.getProduct_proxy_price();
+		} catch (Exception e) {
+			e.printStackTrace();
+			return 0;
+		} finally {
+			try {
+				if (conn != null) {
+					conn.close();
+				}
+			} catch (Exception e2) {
+				e2.printStackTrace();
+			}
+		}
+	}
+
 }

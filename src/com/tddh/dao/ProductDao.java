@@ -27,4 +27,13 @@ public interface ProductDao {
 	 * @return
 	 */
 	public ProxyProductModel getProductByProxyAndId(int proxy_id, int product_id);
+
+	/**
+	 * get product order price depend on proxy level
+	 * 
+	 * @param product_id
+	 * @param proxy_id
+	 * @return
+	 */
+	public double getProductOrderPrice(int product_id, int proxy_id);
 }

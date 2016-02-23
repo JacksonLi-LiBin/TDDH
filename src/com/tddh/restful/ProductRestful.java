@@ -44,4 +44,20 @@ public class ProductRestful {
 		ProxyProductModel proxyProductModel = pdi.getProductByProxyAndId(proxy_id, product_id);
 		return proxyProductModel;
 	}
+
+	/**
+	 * get product price by proxy type
+	 * 
+	 * @param product_id
+	 * @param proxy_id
+	 * @return
+	 */
+	@Path("/getProductPriceByProxy")
+	@GET
+	@Produces(MediaType.TEXT_PLAIN)
+	public String getProductPriceByProxy(@QueryParam("product_id") int product_id,
+			@QueryParam("proxy_id") int proxy_id) {
+		String price = "" + pdi.getProductOrderPrice(product_id, proxy_id);
+		return price;
+	}
 }
