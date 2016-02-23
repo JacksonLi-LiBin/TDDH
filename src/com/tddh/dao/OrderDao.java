@@ -7,5 +7,21 @@ package com.tddh.dao;
  *
  */
 public interface OrderDao {
-
+	/**
+	 * add new order into database
+	 * 
+	 * @param orderId
+	 * @param userId
+	 * @param userAddressId
+	 * @param productId
+	 * @param orderCounts
+	 * @param orderCreateTime
+	 * @param orderPayTime
+	 * @param orderSubmitState
+	 * @param orderState
+	 * @param orderSellerId
+	 * @return
+	 */
+	public boolean addNewOrder(int orderId, int userId, int userAddressId, int productId, int orderCounts,
+			String orderCreateTime, String orderPayTime, int orderSubmitState, int orderState, int orderSellerId);
 }

@@ -13,7 +13,6 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class ProxyProductModel implements Serializable {
 	private static final long serialVersionUID = -8987813568264495415L;
-	private int proxy_id;
 	private double product_proxy_price;
 	private int first_order_counts;
 	private int order_task;
@@ -23,6 +22,7 @@ public class ProxyProductModel implements Serializable {
 	private String product_parameter;
 	private String product_introduction;
 	private String product_list_image;
+	private int proxy_id;
 	private String proxy_value;
 
 	public int getProxy_id() {
