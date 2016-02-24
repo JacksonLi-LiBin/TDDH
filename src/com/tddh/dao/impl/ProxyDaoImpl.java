@@ -29,7 +29,6 @@ public class ProxyDaoImpl implements ProxyDao {
 			}
 			return proxyModels;
 		} catch (Exception e) {
-			e.printStackTrace();
 			return null;
 		} finally {
 			try {
@@ -37,7 +36,6 @@ public class ProxyDaoImpl implements ProxyDao {
 					conn.close();
 				}
 			} catch (Exception e2) {
-				e2.printStackTrace();
 			}
 		}
 	}

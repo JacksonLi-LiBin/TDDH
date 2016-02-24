@@ -39,7 +39,6 @@ public class OrderDaoImpl implements OrderDao {
 				conn.rollback();
 				return false;
 			} catch (Exception e1) {
-				e1.printStackTrace();
 			}
 		} finally {
 			try {

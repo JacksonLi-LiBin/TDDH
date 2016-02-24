@@ -26,7 +26,6 @@ public class ProductDaoImpl implements ProductDao {
 					new BeanListHandler<ProductModel>(ProductModel.class));
 			return products;
 		} catch (Exception e) {
-			e.printStackTrace();
 			return null;
 		} finally {
 			try {
@@ -49,7 +48,6 @@ public class ProductDaoImpl implements ProductDao {
 					new BeanHandler<ProxyProductModel>(ProxyProductModel.class), product_id, proxy_id);
 			return proxyProductModel;
 		} catch (Exception e) {
-			e.printStackTrace();
 			return null;
 		} finally {
 			try {
@@ -72,7 +70,6 @@ public class ProductDaoImpl implements ProductDao {
 					new BeanHandler<ProxyProductModel>(ProxyProductModel.class), product_id, proxy_id);
 			return proxyProductModel.getProduct_proxy_price();
 		} catch (Exception e) {
-			e.printStackTrace();
 			return 0;
 		} finally {
 			try {
@@ -80,7 +77,6 @@ public class ProductDaoImpl implements ProductDao {
 					conn.close();
 				}
 			} catch (Exception e2) {
-				e2.printStackTrace();
 			}
 		}
 	}
