@@ -13,56 +13,24 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class ProxyProductModel implements Serializable {
 	private static final long serialVersionUID = -8987813568264495415L;
-	private double product_proxy_price;
-	private int first_order_counts;
-	private int order_task;
-	private int product_id;
+	private Integer product_id;
 	private String product_name;
-	private double product_sale_price;
+	private Double product_sale_price;
 	private String product_parameter;
 	private String product_introduction;
 	private String product_list_image;
-	private int proxy_id;
+	private Integer proxy_id;
 	private String proxy_value;
+	private Double product_proxy_price;
+	private Integer first_order_counts;
+	private Integer order_task;
 
-	public int getProxy_id() {
-		return proxy_id;
-	}
-
-	public void setProxy_id(int proxy_id) {
-		this.proxy_id = proxy_id;
-	}
-
-	public int getProduct_id() {
+	public Integer getProduct_id() {
 		return product_id;
 	}
 
-	public void setProduct_id(int product_id) {
+	public void setProduct_id(Integer product_id) {
 		this.product_id = product_id;
-	}
-
-	public double getProduct_proxy_price() {
-		return product_proxy_price;
-	}
-
-	public void setProduct_proxy_price(double product_proxy_price) {
-		this.product_proxy_price = product_proxy_price;
-	}
-
-	public int getFirst_order_counts() {
-		return first_order_counts;
-	}
-
-	public void setFirst_order_counts(int first_order_counts) {
-		this.first_order_counts = first_order_counts;
-	}
-
-	public int getOrder_task() {
-		return order_task;
-	}
-
-	public void setOrder_task(int order_task) {
-		this.order_task = order_task;
 	}
 
 	public String getProduct_name() {
@@ -73,11 +41,11 @@ public class ProxyProductModel implements Serializable {
 		this.product_name = product_name;
 	}
 
-	public double getProduct_sale_price() {
+	public Double getProduct_sale_price() {
 		return product_sale_price;
 	}
 
-	public void setProduct_sale_price(double product_sale_price) {
+	public void setProduct_sale_price(Double product_sale_price) {
 		this.product_sale_price = product_sale_price;
 	}
 
@@ -105,12 +73,44 @@ public class ProxyProductModel implements Serializable {
 		this.product_list_image = product_list_image;
 	}
 
+	public Integer getProxy_id() {
+		return proxy_id;
+	}
+
+	public void setProxy_id(Integer proxy_id) {
+		this.proxy_id = proxy_id;
+	}
+
 	public String getProxy_value() {
 		return proxy_value;
 	}
 
 	public void setProxy_value(String proxy_value) {
 		this.proxy_value = proxy_value;
+	}
+
+	public Double getProduct_proxy_price() {
+		return product_proxy_price;
+	}
+
+	public void setProduct_proxy_price(Double product_proxy_price) {
+		this.product_proxy_price = product_proxy_price;
+	}
+
+	public Integer getFirst_order_counts() {
+		return first_order_counts;
+	}
+
+	public void setFirst_order_counts(Integer first_order_counts) {
+		this.first_order_counts = first_order_counts;
+	}
+
+	public Integer getOrder_task() {
+		return order_task;
+	}
+
+	public void setOrder_task(Integer order_task) {
+		this.order_task = order_task;
 	}
 
 	@Override

@@ -26,6 +26,6 @@ public class OrderRestful {
 	@Produces(MediaType.TEXT_PLAIN)
 	public String loadOrders(@QueryParam("order_type") int orderType, @QueryParam("user_id") int userId) {
 		List<OrderDetailModel> list = odi.getOrderDetail(orderType, userId);
-		return list.toString();
+		return list == null ? "" : list.toString();
 	}
 }

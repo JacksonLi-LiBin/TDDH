@@ -13,18 +13,18 @@ import javax.xml.bind.annotation.XmlRootElement;
 @XmlRootElement
 public class ProductModel implements Serializable {
 	private static final long serialVersionUID = 2150070436550140809L;
-	private int product_id;
+	private Integer product_id;
 	private String product_name;
-	private double product_sale_price;
+	private Double product_sale_price;
 	private String product_parameter;
 	private String product_introduction;
 	private String product_list_image;
 
-	public int getProduct_id() {
+	public Integer getProduct_id() {
 		return product_id;
 	}
 
-	public void setProduct_id(int product_id) {
+	public void setProduct_id(Integer product_id) {
 		this.product_id = product_id;
 	}
 
@@ -36,11 +36,11 @@ public class ProductModel implements Serializable {
 		this.product_name = product_name;
 	}
 
-	public double getProduct_sale_price() {
+	public Double getProduct_sale_price() {
 		return product_sale_price;
 	}
 
-	public void setProduct_sale_price(double product_sale_price) {
+	public void setProduct_sale_price(Double product_sale_price) {
 		this.product_sale_price = product_sale_price;
 	}
 

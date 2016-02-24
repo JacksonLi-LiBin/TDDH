@@ -10,21 +10,21 @@ import java.io.Serializable;
  */
 public class UserModel implements Serializable {
 	private static final long serialVersionUID = -5862207866544447688L;
-	private int user_id;
+	private Integer user_id;
 	private String user_name;
 	private String user_nickname;
 	private String user_phone;
 	private String user_proxy_id;
-	private int user_integral;
-	private int user_recommend_id;
+	private Integer user_integral;
+	private Integer user_recommend_id;
 	private String user_superior_id;
 	private String user_qr_code;
 
-	public int getUser_id() {
+	public Integer getUser_id() {
 		return user_id;
 	}
 
-	public void setUser_id(int user_id) {
+	public void setUser_id(Integer user_id) {
 		this.user_id = user_id;
 	}
 
@@ -60,19 +60,19 @@ public class UserModel implements Serializable {
 		this.user_proxy_id = user_proxy_id;
 	}
 
-	public int getUser_integral() {
+	public Integer getUser_integral() {
 		return user_integral;
 	}
 
-	public void setUser_integral(int user_integral) {
+	public void setUser_integral(Integer user_integral) {
 		this.user_integral = user_integral;
 	}
 
-	public int getUser_recommend_id() {
+	public Integer getUser_recommend_id() {
 		return user_recommend_id;
 	}
 
-	public void setUser_recommend_id(int user_recommend_id) {
+	public void setUser_recommend_id(Integer user_recommend_id) {
 		this.user_recommend_id = user_recommend_id;
 	}
 

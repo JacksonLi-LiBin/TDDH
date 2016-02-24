@@ -24,16 +24,10 @@ public class OrderDaoImpl implements OrderDao {
 		try {
 			conn = DBConnectionUtils.getConnection();
 			conn.setAutoCommit(false);
-			int ret = -1;
-			ret = queryRunner.update(conn, PropertiesUtils.readProperties("sql", "add_new_order"), orderId, userId,
+			queryRunner.update(conn, PropertiesUtils.readProperties("sql", "add_new_order"), orderId, userId,
 					userAddressId, productId, orderCounts, orderCreateTime, orderPayTime, orderSubmitState, orderState,
 					orderSellerId);
-			if (ret > 0) {
-				conn.commit();
-				return true;
-			} else {
-				conn.rollback();
-			}
+			conn.commit();
 		} catch (Exception e) {
 			try {
 				conn.rollback();
@@ -66,7 +60,7 @@ public class OrderDaoImpl implements OrderDao {
 				orderModels = queryRunner.query(conn, PropertiesUtils.readProperties("sql", "load_my_proxy_order"),
 						new BeanListHandler<OrderModel>(OrderModel.class), userId);
 			}
-			if (orderModels.size() > 0) {
+			if (orderModels != null && orderModels.size() > 0) {
 				orderDetailModels = new ArrayList<OrderDetailModel>();
 				OrderDetailModel orderDetailModel = null;
 				for (OrderModel orderModel : orderModels) {

@@ -14,15 +14,15 @@ import javax.xml.bind.annotation.XmlRootElement;
 public class ProxyModel implements Serializable {
 	private static final long serialVersionUID = -5143813022975979359L;
 
-	private int proxy_id;
+	private Integer proxy_id;
 	private String proxy_value;
-	private int proxy_level;
+	private Integer proxy_level;
 
-	public int getProxy_id() {
+	public Integer getProxy_id() {
 		return proxy_id;
 	}
 
-	public void setProxy_id(int proxy_id) {
+	public void setProxy_id(Integer proxy_id) {
 		this.proxy_id = proxy_id;
 	}
 
@@ -34,11 +34,11 @@ public class ProxyModel implements Serializable {
 		this.proxy_value = proxy_value;
 	}
 
-	public int getProxy_level() {
+	public Integer getProxy_level() {
 		return proxy_level;
 	}
 
-	public void setProxy_level(int proxy_level) {
+	public void setProxy_level(Integer proxy_level) {
 		this.proxy_level = proxy_level;
 	}
 
