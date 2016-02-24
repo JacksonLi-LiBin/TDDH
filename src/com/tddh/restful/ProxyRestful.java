@@ -23,7 +23,7 @@ public class ProxyRestful {
 	@Path("/loadAllProxies")
 	@GET
 	@Produces(MediaType.APPLICATION_JSON)
-	public List<ProxyModel> loadAllProxies(@QueryParam("requestCondition") String requestCondition,
+	public List<ProxyModel> loadSpecifiedProxies(@QueryParam("requestCondition") String requestCondition,
 			@QueryParam("proxyLevel") int proxyLevel) {
 		List<ProxyModel> proxyModels = pdi.getSpecifiedProxies(requestCondition, proxyLevel);
 		return proxyModels;

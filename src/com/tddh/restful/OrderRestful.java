@@ -23,11 +23,9 @@ public class OrderRestful {
 
 	@Path("/loadOrders")
 	@GET
-	@Produces(MediaType.APPLICATION_JSON)
-	public List<OrderDetailModel> loadOrders(@QueryParam("order_type") int orderType,
-			@QueryParam("user_id") int userId) {
+	@Produces(MediaType.TEXT_PLAIN)
+	public String loadOrders(@QueryParam("order_type") int orderType, @QueryParam("user_id") int userId) {
 		List<OrderDetailModel> list = odi.getOrderDetail(orderType, userId);
-		System.out.println("-------------->" + list);
-		return list;
+		return list.toString();
 	}
 }
