@@ -16,5 +16,5 @@ public interface ProxyDao {
 	 * 
 	 * @return
 	 */
-	public List<ProxyModel> getSpecifiedProxies(String request_condition, int proxy_level);
+	public List<ProxyModel> getSpecifiedProxies(String request_condition, int user_id, int product_id);
 }

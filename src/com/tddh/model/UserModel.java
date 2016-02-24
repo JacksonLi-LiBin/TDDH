@@ -16,7 +16,6 @@ public class UserModel implements Serializable {
 	private String user_phone;
 	private String user_proxy_id;
 	private int user_integral;
-	private String user_proxy_type_id;
 	private int user_recommend_id;
 	private String user_superior_id;
 	private String user_qr_code;
@@ -69,14 +68,6 @@ public class UserModel implements Serializable {
 		this.user_integral = user_integral;
 	}
 
-	public String getUser_proxy_type_id() {
-		return user_proxy_type_id;
-	}
-
-	public void setUser_proxy_type_id(String user_proxy_type_id) {
-		this.user_proxy_type_id = user_proxy_type_id;
-	}
-
 	public int getUser_recommend_id() {
 		return user_recommend_id;
 	}
@@ -105,8 +96,8 @@ public class UserModel implements Serializable {
 	public String toString() {
 		return "{user_id:" + user_id + ", user_name:" + user_name + ", user_nickname:" + user_nickname + ", user_phone:"
 				+ user_phone + ", user_proxy_id:" + user_proxy_id + ", user_integral:" + user_integral
-				+ ", user_proxy_type_id:" + user_proxy_type_id + ", user_recommend_id:" + user_recommend_id
-				+ ", user_superior_id:" + user_superior_id + ", user_qr_code:" + user_qr_code + "}";
+				+ ", user_recommend_id:" + user_recommend_id + ", user_superior_id:" + user_superior_id
+				+ ", user_qr_code:" + user_qr_code + "}";
 	}
 
 }

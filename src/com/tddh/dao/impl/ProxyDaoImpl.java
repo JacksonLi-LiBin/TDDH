@@ -15,7 +15,7 @@ public class ProxyDaoImpl implements ProxyDao {
 	private QueryRunner queryRunner = new QueryRunner();
 
 	@Override
-	public List<ProxyModel> getSpecifiedProxies(String request_condition, int proxy_level) {
+	public List<ProxyModel> getSpecifiedProxies(String request_condition, int user_id, int product_id) {
 		Connection conn = null;
 		List<ProxyModel> proxyModels = null;
 		try {
@@ -25,7 +25,7 @@ public class ProxyDaoImpl implements ProxyDao {
 						new BeanListHandler<ProxyModel>(ProxyModel.class));
 			} else if ("high_level".equals(request_condition)) {
 				proxyModels = queryRunner.query(conn, PropertiesUtils.readProperties("sql", "load_specified_proxies"),
-						new BeanListHandler<ProxyModel>(ProxyModel.class), proxy_level);
+						new BeanListHandler<ProxyModel>(ProxyModel.class), user_id, product_id);
 			}
 			return proxyModels;
 		} catch (Exception e) {
