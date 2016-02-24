@@ -31,6 +31,7 @@ public class ProductDaoImpl implements ProductDao {
 			try {
 				if (conn != null) {
 					conn.close();
+					conn=null;
 				}
 			} catch (Exception e2) {
 			}
@@ -53,6 +54,7 @@ public class ProductDaoImpl implements ProductDao {
 			try {
 				if (conn != null) {
 					conn.close();
+					conn=null;
 				}
 			} catch (Exception e2) {
 
@@ -75,6 +77,7 @@ public class ProductDaoImpl implements ProductDao {
 			try {
 				if (conn != null) {
 					conn.close();
+					conn=null;
 				}
 			} catch (Exception e2) {
 			}

@@ -2,12 +2,15 @@ package com.tddh.model;
 
 import java.io.Serializable;
 
+import javax.xml.bind.annotation.XmlRootElement;
+
 /**
  * user model
  * 
  * @author jackson
  *
  */
+@XmlRootElement
 public class UserModel implements Serializable {
 	private static final long serialVersionUID = -5862207866544447688L;
 	private Integer user_id;

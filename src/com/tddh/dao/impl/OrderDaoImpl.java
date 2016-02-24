@@ -38,6 +38,7 @@ public class OrderDaoImpl implements OrderDao {
 			try {
 				if (conn != null) {
 					conn.close();
+					conn=null;
 				}
 			} catch (Exception e2) {
 			}
@@ -76,12 +77,12 @@ public class OrderDaoImpl implements OrderDao {
 			}
 			return null;
 		} catch (Exception e) {
-			e.printStackTrace();
 			return null;
 		} finally {
 			try {
 				if (conn != null) {
 					conn.close();
+					conn=null;
 				}
 			} catch (Exception e2) {
 
