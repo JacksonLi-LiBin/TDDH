@@ -11,8 +11,9 @@ import java.io.Serializable;
 public class OrderDeductModel implements Serializable {
 	private static final long serialVersionUID = 4588349139187296216L;
 	private Integer order_id;
-	private Double order_superior_deduct;
-	private Double order_recommend_deduct;
+	private Integer order_deduct_id;
+	private Integer product_id;
+	private Double order_deduct;
 
 	public Integer getOrder_id() {
 		return order_id;
@@ -22,26 +23,34 @@ public class OrderDeductModel implements Serializable {
 		this.order_id = order_id;
 	}
 
-	public Double getOrder_superior_deduct() {
-		return order_superior_deduct;
+	public Integer getOrder_deduct_id() {
+		return order_deduct_id;
 	}
 
-	public void setOrder_superior_deduct(Double order_superior_deduct) {
-		this.order_superior_deduct = order_superior_deduct;
+	public void setOrder_deduct_id(Integer order_deduct_id) {
+		this.order_deduct_id = order_deduct_id;
 	}
 
-	public Double getOrder_recommend_deduct() {
-		return order_recommend_deduct;
+	public Integer getProduct_id() {
+		return product_id;
 	}
 
-	public void setOrder_recommend_deduct(Double order_recommend_deduct) {
-		this.order_recommend_deduct = order_recommend_deduct;
+	public void setProduct_id(Integer product_id) {
+		this.product_id = product_id;
+	}
+
+	public Double getOrder_deduct() {
+		return order_deduct;
+	}
+
+	public void setOrder_deduct(Double order_deduct) {
+		this.order_deduct = order_deduct;
 	}
 
 	@Override
 	public String toString() {
-		return "{order_id:" + order_id + ", order_superior_deduct:" + order_superior_deduct
-				+ ", order_recommend_deduct:" + order_recommend_deduct + "}";
+		return "{order_id:" + order_id + ", order_deduct_id:" + order_deduct_id + ", product_id:" + product_id
+				+ ", order_deduct:" + order_deduct + "}";
 	}
 
 }

@@ -9,6 +9,12 @@ import javax.ws.rs.core.MediaType;
 import com.tddh.dao.impl.UserDaoImpl;
 import com.tddh.model.UserModel;
 
+/**
+ * handle user request
+ * 
+ * @author jackson
+ *
+ */
 @Path("user")
 public class UserRestful {
 	private UserDaoImpl udi = new UserDaoImpl();

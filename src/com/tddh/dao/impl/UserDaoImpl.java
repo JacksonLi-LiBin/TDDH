@@ -96,17 +96,16 @@ public class UserDaoImpl implements UserDao {
 	@Override
 	public String getUserDeductAmount(int userId) {
 		Connection conn = null;
-		List<OrderDeductModel> superiorDeduct = null;
-		List<OrderDeductModel> recommendDeduct = null;
+		List<OrderDeductModel> orderDeduct = null;
+		double deductAmount = 0.0d;
 		try {
 			conn = DBConnectionUtils.getConnection();
-			superiorDeduct = queryRunner.query(conn,
-					PropertiesUtils.readProperties("sql", "user_superior_deduct_amount"),
+			orderDeduct = queryRunner.query(conn, PropertiesUtils.readProperties("sql", "user_deduct_amount"),
 					new BeanListHandler<OrderDeductModel>(OrderDeductModel.class), userId);
-			recommendDeduct = queryRunner.query(conn,
-					PropertiesUtils.readProperties("sql", "user_recommend_deduct_amount"),
-					new BeanListHandler<OrderDeductModel>(OrderDeductModel.class), userId);
-			System.out.println(superiorDeduct + "-----" + recommendDeduct);
+			for (OrderDeductModel orderDeductModel : orderDeduct) {
+				deductAmount += orderDeductModel.getOrder_deduct();
+			}
+			return "" + deductAmount;
 		} catch (Exception e) {
 			e.printStackTrace();
 			return null;
@@ -119,7 +118,6 @@ public class UserDaoImpl implements UserDao {
 			} catch (Exception e2) {
 			}
 		}
-		return null;
 	}
 
 }
