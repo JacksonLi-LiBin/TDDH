@@ -1,6 +1,9 @@
 package com.tddh.dao;
 
+import java.util.List;
+
 import com.tddh.model.UserModel;
+import com.tddh.model.UserProxyProductDetailModel;
 
 /**
  * define user database operation functions
@@ -40,4 +43,12 @@ public interface UserDao {
 	 * @return
 	 */
 	public String getUserDeductAmount(int userId);
+
+	/**
+	 * get user proxy product detail id/name/price
+	 * 
+	 * @param userId
+	 * @return
+	 */
+	public List<UserProxyProductDetailModel> getUserProxyProductDetail(int userId);
 }

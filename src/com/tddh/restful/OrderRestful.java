@@ -18,6 +18,13 @@ import com.tddh.dao.impl.OrderDaoImpl;
 public class OrderRestful {
 	private OrderDaoImpl odi = new OrderDaoImpl();
 
+	/**
+	 * get order type 0 my order 1 my proxy order
+	 * 
+	 * @param orderType
+	 * @param userId
+	 * @return
+	 */
 	@Path("/loadOrders")
 	@GET
 	@Produces(MediaType.TEXT_PLAIN)

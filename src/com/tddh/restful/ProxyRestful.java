@@ -16,7 +16,7 @@ public class ProxyRestful {
 	private ProxyDaoImpl pdi = new ProxyDaoImpl();
 
 	/**
-	 * load all proxies
+	 * load proxy according to request condition
 	 * 
 	 * @return
 	 */
