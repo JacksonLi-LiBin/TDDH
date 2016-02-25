@@ -13,9 +13,6 @@ import org.apache.commons.dbutils.handlers.BeanListHandler;
 
 import com.tddh.dao.OrderDao;
 import com.tddh.db.utils.DBConnectionUtils;
-import com.tddh.model.OrderDetailModel;
-import com.tddh.model.OrderModel;
-import com.tddh.model.OrderProductModel;
 import com.tddh.model.ProxyOrderModel;
 import com.tddh.utils.PropertiesUtils;
 
@@ -55,69 +52,50 @@ public class OrderDaoImpl implements OrderDao {
 	@Override
 	public String getOrderDetail(int orderType, int userId) {
 		Connection conn = null;
-		List<OrderModel> orderModels = null;
 		List<ProxyOrderModel> proxyOrderModels = null;
-		List<OrderProductModel> orderProductModels = null;
-		List<OrderDetailModel> orderDetailModels = null;
 		try {
 			conn = DBConnectionUtils.getConnection();
 			if (orderType == 0) {
-				orderModels = queryRunner.query(conn, PropertiesUtils.readProperties("sql", "load_my_order"),
-						new BeanListHandler<OrderModel>(OrderModel.class), userId);
-				if (orderModels != null && orderModels.size() > 0) {
-					orderDetailModels = new ArrayList<OrderDetailModel>();
-					OrderDetailModel orderDetailModel = null;
-					for (OrderModel orderModel : orderModels) {
-						orderDetailModel = new OrderDetailModel();
-						orderDetailModel.setOrderModel(orderModel);
-						orderProductModels = queryRunner.query(conn,
-								PropertiesUtils.readProperties("sql", "load_order_product"),
-								new BeanListHandler<OrderProductModel>(OrderProductModel.class),
-								orderModel.getOrder_id());
-						orderDetailModel.setOrderProductModels(orderProductModels);
-						orderDetailModels.add(orderDetailModel);
-					}
-					return orderDetailModels.toString();
-				}
+				proxyOrderModels = queryRunner.query(conn, PropertiesUtils.readProperties("sql", "load_my_order"),
+						new BeanListHandler<ProxyOrderModel>(ProxyOrderModel.class), userId);
 			} else if (orderType == 1) {
 				proxyOrderModels = queryRunner.query(conn, PropertiesUtils.readProperties("sql", "load_my_proxy_order"),
 						new BeanListHandler<ProxyOrderModel>(ProxyOrderModel.class), userId);
-				Map<Integer, List<ProxyOrderModel>> proxyOrder = null;
-				List<String> proxyOrders = null;
-				if (proxyOrderModels != null && proxyOrderModels.size() > 0) {
-					System.out.println("-->" + proxyOrderModels);
-					proxyOrder = new HashMap<Integer, List<ProxyOrderModel>>();
-					proxyOrders = new ArrayList<String>();
-					System.out.println();
-					for (ProxyOrderModel proxyOrderModel : proxyOrderModels) {
-						boolean flag = false;
-						Iterator iterator = proxyOrder.entrySet().iterator();
-						while (iterator.hasNext()) {
-							Map.Entry<Integer, List<ProxyOrderModel>> entry = (Entry<Integer, List<ProxyOrderModel>>) iterator
-									.next();
-							if (entry.getKey() == proxyOrderModel.getOrder_id()) {
-								List<ProxyOrderModel> poms = entry.getValue();
-								poms.add(proxyOrderModel);
-								flag = true;
-								break;
-							}
-						}
-						if (!flag) {
-							List<ProxyOrderModel> poModels = new ArrayList<ProxyOrderModel>();
-							poModels.add(proxyOrderModel);
-							proxyOrder.put(proxyOrderModel.getOrder_id(), poModels);
-						}
-					}
+			}
+			Map<Integer, List<ProxyOrderModel>> proxyOrder = null;
+			List<String> proxyOrders = null;
+			if (proxyOrderModels != null && proxyOrderModels.size() > 0) {
+				proxyOrder = new HashMap<Integer, List<ProxyOrderModel>>();
+				proxyOrders = new ArrayList<String>();
+				System.out.println();
+				for (ProxyOrderModel proxyOrderModel : proxyOrderModels) {
+					boolean flag = false;
 					Iterator iterator = proxyOrder.entrySet().iterator();
 					while (iterator.hasNext()) {
 						Map.Entry<Integer, List<ProxyOrderModel>> entry = (Entry<Integer, List<ProxyOrderModel>>) iterator
 								.next();
-						List<ProxyOrderModel> poms = entry.getValue();
-						proxyOrders.add("{order_id:" + poms.get(0).getOrder_id() + ",order_state:"
-								+ poms.get(0).getOrder_state() + ",order_products:" + poms + "}");
+						if (entry.getKey() == proxyOrderModel.getOrder_id()) {
+							List<ProxyOrderModel> poms = entry.getValue();
+							poms.add(proxyOrderModel);
+							flag = true;
+							break;
+						}
 					}
-					return "" + proxyOrders;
+					if (!flag) {
+						List<ProxyOrderModel> poModels = new ArrayList<ProxyOrderModel>();
+						poModels.add(proxyOrderModel);
+						proxyOrder.put(proxyOrderModel.getOrder_id(), poModels);
+					}
 				}
+				Iterator iterator = proxyOrder.entrySet().iterator();
+				while (iterator.hasNext()) {
+					Map.Entry<Integer, List<ProxyOrderModel>> entry = (Entry<Integer, List<ProxyOrderModel>>) iterator
+							.next();
+					List<ProxyOrderModel> poms = entry.getValue();
+					proxyOrders.add("{order_id:" + poms.get(0).getOrder_id() + ",order_state:"
+							+ poms.get(0).getOrder_state() + ",order_products:" + poms + "}");
+				}
+				return "" + proxyOrders;
 			}
 			return null;
 		} catch (Exception e) {
