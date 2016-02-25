@@ -34,4 +34,17 @@ public interface OrderDao {
 	 * @return
 	 */
 	public String getOrderDetail(int orderType, int userId);
+
+	/**
+	 * 
+	 * @param userId
+	 * @param recommendProxyId
+	 * @param productId
+	 * @param proxyId
+	 * @param payType
+	 *            0 pay online 1 pay offline
+	 * @return
+	 */
+	public boolean applyForProductProxy(int userId, int recommendProxyId, int productId, int productCounts,
+			int proxyLevel, int payType);
 }

@@ -2,6 +2,7 @@ package com.tddh.dao.impl;
 
 import java.sql.Connection;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -9,11 +10,18 @@ import java.util.Map;
 import java.util.Map.Entry;
 
 import org.apache.commons.dbutils.QueryRunner;
+import org.apache.commons.dbutils.handlers.BeanHandler;
 import org.apache.commons.dbutils.handlers.BeanListHandler;
 
 import com.tddh.dao.OrderDao;
 import com.tddh.db.utils.DBConnectionUtils;
+import com.tddh.model.ProxyModel;
 import com.tddh.model.ProxyOrderModel;
+import com.tddh.model.ProxyProductModel;
+import com.tddh.model.ProxyRecomendPercentModel;
+import com.tddh.model.UserModel;
+import com.tddh.model.UserProxyProductModel;
+import com.tddh.utils.DateUtils;
 import com.tddh.utils.PropertiesUtils;
 
 public class OrderDaoImpl implements OrderDao {
@@ -110,5 +118,79 @@ public class OrderDaoImpl implements OrderDao {
 
 			}
 		}
+	}
+
+	@Override
+	public boolean applyForProductProxy(int userId, int recommendProxyId, int productId, int productCounts,
+			int proxyLevel, int payType) {
+		Connection conn = null;
+		try {
+			conn = DBConnectionUtils.getConnection();
+			Integer orderId = (int) (Math.random() * 100000000);
+			String createTime = DateUtils.getDateFormat().format(new Date());
+			UserModel recommendUser = queryRunner.query(conn,
+					PropertiesUtils.readProperties("sql", "get_user_by_proxyid"),
+					new BeanHandler<UserModel>(UserModel.class), recommendProxyId);
+			if (recommendUser != null) {
+				UserProxyProductModel userIsProxy = queryRunner.query(conn,
+						PropertiesUtils.readProperties("sql", "user_is_product_proxy"),
+						new BeanHandler<UserProxyProductModel>(UserProxyProductModel.class), recommendUser.getUser_id(),
+						productId);
+				if (userIsProxy != null) {
+					// recommend user to my upper proxy user
+					if (userIsProxy.getUser_superior_id() != null) {
+						UserProxyProductModel parentProductProxy = queryRunner.query(conn,
+								PropertiesUtils.readProperties("sql", "user_is_product_proxy"),
+								new BeanHandler<UserProxyProductModel>(UserProxyProductModel.class),
+								userIsProxy.getUser_superior_id(), productId);
+						ProxyModel proxyModel = queryRunner.query(conn,
+								PropertiesUtils.readProperties("sql", "load_proxy"),
+								new BeanHandler<ProxyModel>(ProxyModel.class), parentProductProxy.getProxy_id());
+						if (proxyLevel < proxyModel.getProxy_level()) {
+							conn.setAutoCommit(false);
+							Object[] newOrderParams = { orderId, userId, createTime, null, 0, 0, null, null };
+							ProxyProductModel proxyProductModel = queryRunner.query(conn,
+									PropertiesUtils.readProperties("sql", "load_product_by_proxy"),
+									new BeanHandler<ProxyProductModel>(ProxyProductModel.class), productId,
+									proxyModel.getProxy_level());
+							ProxyRecomendPercentModel proxyRecomendPercentModel = queryRunner.query(conn,
+									PropertiesUtils.readProperties("sql", "get_proxy_percent"),
+									new BeanHandler<ProxyRecomendPercentModel>(ProxyRecomendPercentModel.class),
+									proxyLevel);
+							Double total_price = (proxyProductModel.getProduct_proxy_price() * productCounts);
+							Double deduct = total_price * proxyRecomendPercentModel.getDeduct_percent();
+							Object[] newOrderProductParams = { orderId, productId, productCounts,
+									proxyProductModel.getProduct_proxy_price(), (total_price - deduct) };
+							Object[] newOrderDeductParams = { orderId, recommendUser.getUser_id(), productId, deduct,
+									0 };
+							Object[] newProxyProductParams = {userId,productId,};xX
+							queryRunner.update(conn, PropertiesUtils.readProperties("sql", "add_new_order"),
+									newOrderParams);
+							if (payType == 0) {
+								// pay online
+							}
+						} else {
+							// recommend user to root proxy user
+						}
+					} else {
+						// recommend user to root proxy user
+					}
+				} else {
+					// recommend user to root proxy user
+				}
+			}
+
+		} catch (Exception e) {
+			return false;
+		} finally {
+			try {
+				if (conn != null) {
+					conn.close();
+					conn = null;
+				}
+			} catch (Exception e2) {
+			}
+		}
+		return false;
 	}
 }

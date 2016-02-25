@@ -15,6 +15,7 @@ public class UserProxyProductModel implements Serializable {
 	private Integer proxy_id;
 	private Integer user_superior_id;
 	private Integer user_recommend_id;
+	private Integer product_proxy_state;
 
 	public Integer getUser_id() {
 		return user_id;
@@ -56,10 +57,19 @@ public class UserProxyProductModel implements Serializable {
 		this.user_recommend_id = user_recommend_id;
 	}
 
+	public Integer getProduct_proxy_state() {
+		return product_proxy_state;
+	}
+
+	public void setProduct_proxy_state(Integer product_proxy_state) {
+		this.product_proxy_state = product_proxy_state;
+	}
+
 	@Override
 	public String toString() {
 		return "{user_id:" + user_id + ", product_id:" + product_id + ", proxy_id:" + proxy_id + ", user_superior_id:"
-				+ user_superior_id + ", user_recommend_id:" + user_recommend_id + "}";
+				+ user_superior_id + ", user_recommend_id:" + user_recommend_id + ", product_proxy_state:"
+				+ product_proxy_state + "}";
 	}
 
 }
