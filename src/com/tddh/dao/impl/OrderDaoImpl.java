@@ -83,10 +83,12 @@ public class OrderDaoImpl implements OrderDao {
 				proxyOrderModels = queryRunner.query(conn, PropertiesUtils.readProperties("sql", "load_my_proxy_order"),
 						new BeanListHandler<ProxyOrderModel>(ProxyOrderModel.class), userId);
 				Map<Integer, List<ProxyOrderModel>> proxyOrder = null;
-				List<List<ProxyOrderModel>> proxyOrders = null;
+				List<String> proxyOrders = null;
 				if (proxyOrderModels != null && proxyOrderModels.size() > 0) {
+					System.out.println("-->" + proxyOrderModels);
 					proxyOrder = new HashMap<Integer, List<ProxyOrderModel>>();
-					proxyOrders = new ArrayList<List<ProxyOrderModel>>();
+					proxyOrders = new ArrayList<String>();
+					System.out.println();
 					for (ProxyOrderModel proxyOrderModel : proxyOrderModels) {
 						boolean flag = false;
 						Iterator iterator = proxyOrder.entrySet().iterator();
@@ -111,7 +113,8 @@ public class OrderDaoImpl implements OrderDao {
 						Map.Entry<Integer, List<ProxyOrderModel>> entry = (Entry<Integer, List<ProxyOrderModel>>) iterator
 								.next();
 						List<ProxyOrderModel> poms = entry.getValue();
-						proxyOrders.add(poms);
+						proxyOrders.add("{order_id:" + poms.get(0).getOrder_id() + ",order_state:"
+								+ poms.get(0).getOrder_state() + ",order_products:" + poms + "}");
 					}
 					return "" + proxyOrders;
 				}

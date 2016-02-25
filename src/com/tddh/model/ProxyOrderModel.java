@@ -16,6 +16,7 @@ public class ProxyOrderModel implements Serializable {
 	private Double product_total_price;
 	private String product_name;
 	private String product_parameter;
+	private Integer order_state;
 
 	public Integer getOrder_id() {
 		return order_id;
@@ -65,11 +66,19 @@ public class ProxyOrderModel implements Serializable {
 		this.product_parameter = product_parameter;
 	}
 
+	public Integer getOrder_state() {
+		return order_state;
+	}
+
+	public void setOrder_state(Integer order_state) {
+		this.order_state = order_state;
+	}
+
 	@Override
 	public String toString() {
 		return "{order_id:" + order_id + ", product_id:" + product_id + ", product_counts:" + product_counts
 				+ ", product_total_price:" + product_total_price + ", product_name:" + product_name
-				+ ", product_parameter:" + product_parameter + "}";
+				+ ", product_parameter:" + product_parameter + ", order_state:" + order_state + "}";
 	}
 
 }
