@@ -1,9 +1,5 @@
 package com.tddh.dao;
 
-import java.util.List;
-
-import com.tddh.model.OrderDetailModel;
-
 /**
  * define order database operation functions
  * 
@@ -37,5 +33,5 @@ public interface OrderDao {
 	 * @param userId
 	 * @return
 	 */
-	public List<OrderDetailModel> getOrderDetail(int orderType, int userId);
+	public String getOrderDetail(int orderType, int userId);
 }

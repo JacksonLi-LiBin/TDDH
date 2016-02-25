@@ -23,7 +23,7 @@ public class UserDaoImpl implements UserDao {
 		UserModel userModel = null;
 		try {
 			conn = DBConnectionUtils.getConnection();
-			userModel = queryRunner.query(conn, PropertiesUtils.readProperties("sql", "user_is_proxy"),
+			userModel = queryRunner.query(conn, PropertiesUtils.readProperties("sql", "user_base_information"),
 					new BeanHandler<UserModel>(UserModel.class), user_id);
 			if (userModel.getUser_proxy_id() != null && !"".equals(userModel.getUser_proxy_id())) {
 				return true;
