@@ -130,6 +130,9 @@ public class OrderDaoImpl implements OrderDao {
 			UserProxyProductModel userProxyProductModel = queryRunner.query(conn,
 					PropertiesUtils.readProperties("sql", "load_product_by_user_product"),
 					new BeanHandler<UserProxyProductModel>(UserProxyProductModel.class), userId, productId);
+			ProxyModel userproxyModel = queryRunner.query(conn,
+					PropertiesUtils.readProperties("sql", "load_proxy_by_level"),
+					new BeanHandler<ProxyModel>(ProxyModel.class), proxyLevel);
 			if (userProxyProductModel == null) {
 				List<UserAddressModel> userAddressModels = queryRunner.query(conn,
 						PropertiesUtils.readProperties("sql", "load_user_all_address"),
@@ -166,64 +169,85 @@ public class OrderDaoImpl implements OrderDao {
 										new BeanHandler<ProxyModel>(ProxyModel.class),
 										parentProductProxy.getProxy_id());
 								if (proxyLevel > recomendParentProxyModel.getProxy_level()) {
-									conn.setAutoCommit(false);
-									Object[] newOrderParams = { orderId, userId, createTime, null, 0, 0,
-											userDefaultAddressId, null, null };
-									ProxyProductModel proxyProductModel = queryRunner.query(conn,
-											PropertiesUtils.readProperties("sql", "load_product_by_proxy"),
-											new BeanHandler<ProxyProductModel>(ProxyProductModel.class), productId,
-											recomendParentProxyModel.getProxy_level());
-									ProxyRecomendPercentModel proxyRecomendPercentModel = queryRunner.query(conn,
-											PropertiesUtils.readProperties("sql", "get_proxy_percent"),
-											new BeanHandler<ProxyRecomendPercentModel>(ProxyRecomendPercentModel.class),
-											proxyLevel);
-									Double total_price = (proxyProductModel.getProduct_proxy_price() * productCounts);
-									Double deduct = total_price
-											* Double.parseDouble(proxyRecomendPercentModel.getDeduct_percent());
-									Object[] newOrderProductParams = { orderId, productId, productCounts,
-											proxyProductModel.getProduct_proxy_price(), (total_price - deduct) };
-									Object[] newOrderDeductParams = { orderId, recommendUser.getUser_id(), productId,
-											deduct, 0 };
-									ProxyModel userproxyModel = queryRunner.query(conn,
-											PropertiesUtils.readProperties("sql", "load_proxy_by_level"),
-											new BeanHandler<ProxyModel>(ProxyModel.class), proxyLevel);
-									Object[] newProxyProductParams = { userId, productId, userproxyModel.getProxy_id(),
-											parentProductProxy.getUser_id(), recommendUser.getUser_id(), 0 };
-									Object[] uncheckOrderParams = { orderId, 0 };
-									queryRunner.update(conn, PropertiesUtils.readProperties("sql", "add_new_order"),
-											newOrderParams);
-									queryRunner.update(conn,
-											PropertiesUtils.readProperties("sql", "add_new_order_product"),
-											newOrderProductParams);
-									queryRunner.update(conn,
-											PropertiesUtils.readProperties("sql", "add_new_order_deduct"),
-											newOrderDeductParams);
-									queryRunner.update(conn,
-											PropertiesUtils.readProperties("sql", "user_add_new_product_proxy"),
-											newProxyProductParams);
-									queryRunner.update(conn,
-											PropertiesUtils.readProperties("sql", "add_new_uncheck_order"),
-											uncheckOrderParams);
-									if (payType == 0) {
-										// pay online
-									} else if (payType == 1) {
-										// pay offline
-										conn.commit();
-										return "true";
-									}
+									return applyProxy(conn, orderId, userId, createTime, userDefaultAddressId,
+											productId, userproxyModel.getProxy_id(), proxyLevel, productCounts,
+											parentProductProxy.getUser_id(), recommendUser.getUser_id(), payType);
 								} else {
-									// recommend user to root proxy user
+									// recommend user to company
+									return applyProxy(conn, orderId, userId, createTime, userDefaultAddressId,
+											productId, userproxyModel.getProxy_id(), proxyLevel, productCounts, null,
+											recommendUser.getUser_id(), payType);
 								}
 							} else {
-								// recommend user to root proxy user
+								// recommend user to company
+								return applyProxy(conn, orderId, userId, createTime, userDefaultAddressId, productId,
+										userproxyModel.getProxy_id(), proxyLevel, productCounts, null,
+										recommendUser.getUser_id(), payType);
 							}
 						} else {
-							// recommend user to root proxy user
+							// recommend user to company
+							return applyProxy(conn, orderId, userId, createTime, userDefaultAddressId, productId,
+									userproxyModel.getProxy_id(), proxyLevel, productCounts, null,
+									recommendUser.getUser_id(), payType);
 						}
 					}
 				}
 			} else {
 				return "already_applied";
+			}
+		} catch (Exception e) {
+			try {
+				conn.rollback();
+				e.printStackTrace();
+				return "false";
+			} catch (Exception e2) {
+			}
+		} finally {
+			try {
+				if (conn != null) {
+					conn.close();
+					conn = null;
+				}
+			} catch (Exception e2) {
+			}
+		}
+		return "false";
+	}
+
+	private String applyProxy(Connection conn, Integer orderId, Integer userId, String createTime,
+			Integer userDefaultAddressId, Integer productId, Integer proxyId, Integer proxyLevel, Integer productCounts,
+			Integer superiorId, Integer recommendId, Integer payType) {
+		try {
+			conn.setAutoCommit(false);
+			Object[] newOrderParams = { orderId, userId, createTime, null, 0, 0, userDefaultAddressId, null, null };
+			ProxyProductModel proxyProductModel = queryRunner.query(conn,
+					PropertiesUtils.readProperties("sql", "load_product_by_proxy"),
+					new BeanHandler<ProxyProductModel>(ProxyProductModel.class), productId, proxyId);
+			ProxyRecomendPercentModel proxyRecomendPercentModel = queryRunner.query(conn,
+					PropertiesUtils.readProperties("sql", "get_proxy_percent"),
+					new BeanHandler<ProxyRecomendPercentModel>(ProxyRecomendPercentModel.class), proxyLevel);
+			Double total_price = (proxyProductModel.getProduct_proxy_price() * productCounts);
+			Double deduct = total_price * Double.parseDouble(proxyRecomendPercentModel.getDeduct_percent());
+			Object[] newOrderProductParams = { orderId, productId, productCounts,
+					proxyProductModel.getProduct_proxy_price(), (total_price - deduct) };
+			Object[] newOrderDeductParams = { orderId, recommendId, productId, deduct, 0 };
+			Object[] newProxyProductParams = { userId, productId, proxyId, superiorId, recommendId, 0 };
+			Object[] uncheckOrderParams = { orderId, 0 };
+			queryRunner.update(conn, PropertiesUtils.readProperties("sql", "add_new_order"), newOrderParams);
+			queryRunner.update(conn, PropertiesUtils.readProperties("sql", "add_new_order_product"),
+					newOrderProductParams);
+			queryRunner.update(conn, PropertiesUtils.readProperties("sql", "add_new_order_deduct"),
+					newOrderDeductParams);
+			queryRunner.update(conn, PropertiesUtils.readProperties("sql", "user_add_new_product_proxy"),
+					newProxyProductParams);
+			queryRunner.update(conn, PropertiesUtils.readProperties("sql", "add_new_uncheck_order"),
+					uncheckOrderParams);
+			if (payType == 0) {
+				// pay online
+			} else if (payType == 1) {
+				// pay offline
+				conn.commit();
+				return "true";
 			}
 		} catch (Exception e) {
 			try {
