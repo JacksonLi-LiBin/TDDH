@@ -22,6 +22,7 @@ import com.tddh.model.ProxyRecomendPercentModel;
 import com.tddh.model.UserAddressModel;
 import com.tddh.model.UserModel;
 import com.tddh.model.UserProxyProductModel;
+import com.tddh.model.UserSubordinateRecommendOrderModel;
 import com.tddh.utils.DateUtils;
 import com.tddh.utils.PropertiesUtils;
 
@@ -264,5 +265,42 @@ public class OrderDaoImpl implements OrderDao {
 			}
 		}
 		return "false";
+	}
+
+	@Override
+	public List<UserSubordinateRecommendOrderModel> getMySubordinateRecommendOrder(Integer reqType, Integer userId,
+			Integer productId) {
+		Connection conn = null;
+		List<UserSubordinateRecommendOrderModel> orderList = null;
+		try {
+			conn = DBConnectionUtils.getConnection();
+			switch (reqType) {
+			case 0:// subordinate order
+				orderList = queryRunner.query(conn,
+						PropertiesUtils.readProperties("sql", "load_my_subordinate_product_proxy_order"),
+						new BeanListHandler<UserSubordinateRecommendOrderModel>(
+								UserSubordinateRecommendOrderModel.class),
+						userId, productId);
+				break;
+			case 1:// recommend order
+				orderList = queryRunner.query(conn,
+						PropertiesUtils.readProperties("sql", "load_my_recommend_product_proxy_order"),
+						new BeanListHandler<UserSubordinateRecommendOrderModel>(
+								UserSubordinateRecommendOrderModel.class),
+						userId, productId);
+				break;
+			}
+			return orderList;
+		} catch (Exception e) {
+			return null;
+		} finally {
+			try {
+				if (conn != null) {
+					conn.close();
+					conn = null;
+				}
+			} catch (Exception e2) {
+			}
+		}
 	}
 }

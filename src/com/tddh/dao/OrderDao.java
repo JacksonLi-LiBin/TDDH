@@ -1,5 +1,9 @@
 package com.tddh.dao;
 
+import java.util.List;
+
+import com.tddh.model.UserSubordinateRecommendOrderModel;
+
 /**
  * define order database operation functions
  * 
@@ -47,4 +51,16 @@ public interface OrderDao {
 	 */
 	public String applyForProductProxy(int userId, int recommendProxyId, int productId, int productCounts,
 			int proxyLevel, int payType);
+
+	/**
+	 * get user subordinate or recommend product proxy order
+	 * 
+	 * @param reqType
+	 *            0 subordinate 1 recommend
+	 * @param userId
+	 * @param productId
+	 * @return
+	 */
+	public List<UserSubordinateRecommendOrderModel> getMySubordinateRecommendOrder(Integer reqType, Integer userId,
+			Integer productId);
 }
