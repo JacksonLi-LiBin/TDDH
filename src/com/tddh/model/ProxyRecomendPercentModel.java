@@ -11,7 +11,7 @@ import java.io.Serializable;
 public class ProxyRecomendPercentModel implements Serializable {
 	private static final long serialVersionUID = -439258961088091271L;
 	private Integer proxy_level;
-	private Double deduct_percent;
+	private String deduct_percent;
 
 	public Integer getProxy_level() {
 		return proxy_level;
@@ -21,11 +21,11 @@ public class ProxyRecomendPercentModel implements Serializable {
 		this.proxy_level = proxy_level;
 	}
 
-	public Double getDeduct_percent() {
+	public String getDeduct_percent() {
 		return deduct_percent;
 	}
 
-	public void setDeduct_percent(Double deduct_percent) {
+	public void setDeduct_percent(String deduct_percent) {
 		this.deduct_percent = deduct_percent;
 	}
 

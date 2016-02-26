@@ -8,6 +8,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
+import com.tddh.dao.impl.OrderDaoImpl;
 import com.tddh.dao.impl.UserDaoImpl;
 import com.tddh.model.UserModel;
 import com.tddh.model.UserProxyProductDetailModel;
@@ -21,6 +22,7 @@ import com.tddh.model.UserProxyProductDetailModel;
 @Path("user")
 public class UserRestful {
 	private UserDaoImpl udi = new UserDaoImpl();
+	private OrderDaoImpl odi = new OrderDaoImpl();
 
 	/**
 	 * judge whether user has been proxy
@@ -84,5 +86,15 @@ public class UserRestful {
 	public List<UserProxyProductDetailModel> loadUserProxyProductDetail(@QueryParam("userId") int userId) {
 		List<UserProxyProductDetailModel> list = udi.getUserProxyProductDetail(userId);
 		return list;
+	}
+
+	@Path("/applyForProductProxy")
+	@GET
+	@Produces(MediaType.TEXT_PLAIN)
+	public String applyForProductProxy(@QueryParam("userId") int userId, @QueryParam("rpId") int rpId,
+			@QueryParam("productId") int productId, @QueryParam("productCounts") int productCounts,
+			@QueryParam("proxyLevel") int proxyLevel, @QueryParam("payType") int payType) {
+		String apply_response = odi.applyForProductProxy(userId, rpId, productId, productCounts, proxyLevel, payType);
+		return apply_response;
 	}
 }

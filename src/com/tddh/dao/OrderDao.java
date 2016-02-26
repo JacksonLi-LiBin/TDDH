@@ -45,6 +45,6 @@ public interface OrderDao {
 	 *            0 pay online 1 pay offline
 	 * @return
 	 */
-	public boolean applyForProductProxy(int userId, int recommendProxyId, int productId, int productCounts,
+	public String applyForProductProxy(int userId, int recommendProxyId, int productId, int productCounts,
 			int proxyLevel, int payType);
 }

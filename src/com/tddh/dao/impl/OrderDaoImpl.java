@@ -19,6 +19,7 @@ import com.tddh.model.ProxyModel;
 import com.tddh.model.ProxyOrderModel;
 import com.tddh.model.ProxyProductModel;
 import com.tddh.model.ProxyRecomendPercentModel;
+import com.tddh.model.UserAddressModel;
 import com.tddh.model.UserModel;
 import com.tddh.model.UserProxyProductModel;
 import com.tddh.utils.DateUtils;
@@ -121,67 +122,116 @@ public class OrderDaoImpl implements OrderDao {
 	}
 
 	@Override
-	public boolean applyForProductProxy(int userId, int recommendProxyId, int productId, int productCounts,
+	public String applyForProductProxy(int userId, int recommendProxyId, int productId, int productCounts,
 			int proxyLevel, int payType) {
 		Connection conn = null;
 		try {
 			conn = DBConnectionUtils.getConnection();
-			Integer orderId = (int) (Math.random() * 100000000);
-			String createTime = DateUtils.getDateFormat().format(new Date());
-			UserModel recommendUser = queryRunner.query(conn,
-					PropertiesUtils.readProperties("sql", "get_user_by_proxyid"),
-					new BeanHandler<UserModel>(UserModel.class), recommendProxyId);
-			if (recommendUser != null) {
-				UserProxyProductModel userIsProxy = queryRunner.query(conn,
-						PropertiesUtils.readProperties("sql", "user_is_product_proxy"),
-						new BeanHandler<UserProxyProductModel>(UserProxyProductModel.class), recommendUser.getUser_id(),
-						productId);
-				if (userIsProxy != null) {
-					// recommend user to my upper proxy user
-					if (userIsProxy.getUser_superior_id() != null) {
-						UserProxyProductModel parentProductProxy = queryRunner.query(conn,
+			UserProxyProductModel userProxyProductModel = queryRunner.query(conn,
+					PropertiesUtils.readProperties("sql", "load_product_by_user_product"),
+					new BeanHandler<UserProxyProductModel>(UserProxyProductModel.class), userId, productId);
+			if (userProxyProductModel == null) {
+				List<UserAddressModel> userAddressModels = queryRunner.query(conn,
+						PropertiesUtils.readProperties("sql", "load_user_all_address"),
+						new BeanListHandler<UserAddressModel>(UserAddressModel.class), userId);
+				if (userAddressModels == null || userAddressModels.size() == 0) {
+					return "address_null";
+				} else {
+					Integer userDefaultAddressId = null;
+					for (UserAddressModel addressModel : userAddressModels) {
+						if (addressModel.getUser_address_default() == 1) {
+							userDefaultAddressId = addressModel.getUser_address_id();
+							break;
+						}
+					}
+					Integer orderId = (int) (Math.random() * 100000000);
+					String createTime = DateUtils.getDateFormat().format(new Date());
+					UserModel recommendUser = queryRunner.query(conn,
+							PropertiesUtils.readProperties("sql", "get_user_by_proxy_id"),
+							new BeanHandler<UserModel>(UserModel.class), recommendProxyId);
+					if (recommendUser != null) {
+						UserProxyProductModel userIsProxy = queryRunner.query(conn,
 								PropertiesUtils.readProperties("sql", "user_is_product_proxy"),
 								new BeanHandler<UserProxyProductModel>(UserProxyProductModel.class),
-								userIsProxy.getUser_superior_id(), productId);
-						ProxyModel proxyModel = queryRunner.query(conn,
-								PropertiesUtils.readProperties("sql", "load_proxy"),
-								new BeanHandler<ProxyModel>(ProxyModel.class), parentProductProxy.getProxy_id());
-						if (proxyLevel < proxyModel.getProxy_level()) {
-							conn.setAutoCommit(false);
-							Object[] newOrderParams = { orderId, userId, createTime, null, 0, 0, null, null };
-							ProxyProductModel proxyProductModel = queryRunner.query(conn,
-									PropertiesUtils.readProperties("sql", "load_product_by_proxy"),
-									new BeanHandler<ProxyProductModel>(ProxyProductModel.class), productId,
-									proxyModel.getProxy_level());
-							ProxyRecomendPercentModel proxyRecomendPercentModel = queryRunner.query(conn,
-									PropertiesUtils.readProperties("sql", "get_proxy_percent"),
-									new BeanHandler<ProxyRecomendPercentModel>(ProxyRecomendPercentModel.class),
-									proxyLevel);
-							Double total_price = (proxyProductModel.getProduct_proxy_price() * productCounts);
-							Double deduct = total_price * proxyRecomendPercentModel.getDeduct_percent();
-							Object[] newOrderProductParams = { orderId, productId, productCounts,
-									proxyProductModel.getProduct_proxy_price(), (total_price - deduct) };
-							Object[] newOrderDeductParams = { orderId, recommendUser.getUser_id(), productId, deduct,
-									0 };
-							Object[] newProxyProductParams = {userId,productId,};xX
-							queryRunner.update(conn, PropertiesUtils.readProperties("sql", "add_new_order"),
-									newOrderParams);
-							if (payType == 0) {
-								// pay online
+								recommendUser.getUser_id(), productId);
+						if (userIsProxy != null) {
+							// recommend user to my upper proxy user
+							if (userIsProxy.getUser_superior_id() != null) {
+								UserProxyProductModel parentProductProxy = queryRunner.query(conn,
+										PropertiesUtils.readProperties("sql", "user_is_product_proxy"),
+										new BeanHandler<UserProxyProductModel>(UserProxyProductModel.class),
+										userIsProxy.getUser_superior_id(), productId);
+								ProxyModel recomendParentProxyModel = queryRunner.query(conn,
+										PropertiesUtils.readProperties("sql", "load_proxy_by_id"),
+										new BeanHandler<ProxyModel>(ProxyModel.class),
+										parentProductProxy.getProxy_id());
+								if (proxyLevel > recomendParentProxyModel.getProxy_level()) {
+									conn.setAutoCommit(false);
+									Object[] newOrderParams = { orderId, userId, createTime, null, 0, 0,
+											userDefaultAddressId, null, null };
+									ProxyProductModel proxyProductModel = queryRunner.query(conn,
+											PropertiesUtils.readProperties("sql", "load_product_by_proxy"),
+											new BeanHandler<ProxyProductModel>(ProxyProductModel.class), productId,
+											recomendParentProxyModel.getProxy_level());
+									ProxyRecomendPercentModel proxyRecomendPercentModel = queryRunner.query(conn,
+											PropertiesUtils.readProperties("sql", "get_proxy_percent"),
+											new BeanHandler<ProxyRecomendPercentModel>(ProxyRecomendPercentModel.class),
+											proxyLevel);
+									Double total_price = (proxyProductModel.getProduct_proxy_price() * productCounts);
+									Double deduct = total_price
+											* Double.parseDouble(proxyRecomendPercentModel.getDeduct_percent());
+									Object[] newOrderProductParams = { orderId, productId, productCounts,
+											proxyProductModel.getProduct_proxy_price(), (total_price - deduct) };
+									Object[] newOrderDeductParams = { orderId, recommendUser.getUser_id(), productId,
+											deduct, 0 };
+									ProxyModel userproxyModel = queryRunner.query(conn,
+											PropertiesUtils.readProperties("sql", "load_proxy_by_level"),
+											new BeanHandler<ProxyModel>(ProxyModel.class), proxyLevel);
+									Object[] newProxyProductParams = { userId, productId, userproxyModel.getProxy_id(),
+											parentProductProxy.getUser_id(), recommendUser.getUser_id(), 0 };
+									Object[] uncheckOrderParams = { orderId, 0 };
+									queryRunner.update(conn, PropertiesUtils.readProperties("sql", "add_new_order"),
+											newOrderParams);
+									queryRunner.update(conn,
+											PropertiesUtils.readProperties("sql", "add_new_order_product"),
+											newOrderProductParams);
+									queryRunner.update(conn,
+											PropertiesUtils.readProperties("sql", "add_new_order_deduct"),
+											newOrderDeductParams);
+									queryRunner.update(conn,
+											PropertiesUtils.readProperties("sql", "user_add_new_product_proxy"),
+											newProxyProductParams);
+									queryRunner.update(conn,
+											PropertiesUtils.readProperties("sql", "add_new_uncheck_order"),
+											uncheckOrderParams);
+									if (payType == 0) {
+										// pay online
+									} else if (payType == 1) {
+										// pay offline
+										conn.commit();
+										return "true";
+									}
+								} else {
+									// recommend user to root proxy user
+								}
+							} else {
+								// recommend user to root proxy user
 							}
 						} else {
 							// recommend user to root proxy user
 						}
-					} else {
-						// recommend user to root proxy user
 					}
-				} else {
-					// recommend user to root proxy user
 				}
+			} else {
+				return "already_applied";
 			}
-
 		} catch (Exception e) {
-			return false;
+			try {
+				conn.rollback();
+				e.printStackTrace();
+				return "false";
+			} catch (Exception e2) {
+			}
 		} finally {
 			try {
 				if (conn != null) {
@@ -191,6 +241,6 @@ public class OrderDaoImpl implements OrderDao {
 			} catch (Exception e2) {
 			}
 		}
-		return false;
+		return "false";
 	}
 }
