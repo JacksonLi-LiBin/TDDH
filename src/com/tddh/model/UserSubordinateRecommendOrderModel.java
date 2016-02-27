@@ -18,10 +18,12 @@ public class UserSubordinateRecommendOrderModel implements Serializable {
 	private Integer proxy_id;
 	private String proxy_value;
 	private Integer proxy_level;
-	private Integer product_counts;
+	private Integer product_id;
+	private Integer p_counts;
 	private Double product_proxy_price;
-	private Double real_get_total_price;
-	private Double order_deduct;
+	private Double p_t_price;
+	private Integer order_id;
+	private Double o_deduct;
 
 	public Integer getUser_id() {
 		return user_id;
@@ -55,12 +57,28 @@ public class UserSubordinateRecommendOrderModel implements Serializable {
 		this.proxy_value = proxy_value;
 	}
 
-	public Integer getProduct_counts() {
-		return product_counts;
+	public Integer getProxy_level() {
+		return proxy_level;
 	}
 
-	public void setProduct_counts(Integer product_counts) {
-		this.product_counts = product_counts;
+	public void setProxy_level(Integer proxy_level) {
+		this.proxy_level = proxy_level;
+	}
+
+	public Integer getProduct_id() {
+		return product_id;
+	}
+
+	public void setProduct_id(Integer product_id) {
+		this.product_id = product_id;
+	}
+
+	public Integer getP_counts() {
+		return p_counts;
+	}
+
+	public void setP_counts(Integer p_counts) {
+		this.p_counts = p_counts;
 	}
 
 	public Double getProduct_proxy_price() {
@@ -71,36 +89,36 @@ public class UserSubordinateRecommendOrderModel implements Serializable {
 		this.product_proxy_price = product_proxy_price;
 	}
 
-	public Double getReal_get_total_price() {
-		return real_get_total_price;
+	public Double getP_t_price() {
+		return p_t_price;
 	}
 
-	public void setReal_get_total_price(Double real_get_total_price) {
-		this.real_get_total_price = real_get_total_price;
+	public void setP_t_price(Double p_t_price) {
+		this.p_t_price = p_t_price;
 	}
 
-	public Integer getProxy_level() {
-		return proxy_level;
+	public Integer getOrder_id() {
+		return order_id;
 	}
 
-	public void setProxy_level(Integer proxy_level) {
-		this.proxy_level = proxy_level;
+	public void setOrder_id(Integer order_id) {
+		this.order_id = order_id;
 	}
 
-	public Double getOrder_deduct() {
-		return order_deduct;
+	public Double getO_deduct() {
+		return o_deduct;
 	}
 
-	public void setOrder_deduct(Double order_deduct) {
-		this.order_deduct = order_deduct;
+	public void setO_deduct(Double o_deduct) {
+		this.o_deduct = o_deduct;
 	}
 
 	@Override
 	public String toString() {
 		return "{user_id:" + user_id + ", user_nickname:" + user_nickname + ", proxy_id:" + proxy_id + ", proxy_value:"
-				+ proxy_value + ", product_counts:" + product_counts + ", product_proxy_price:" + product_proxy_price
-				+ ", real_get_total_price:" + real_get_total_price + ", proxy_level:" + proxy_level + ", order_deduct:"
-				+ order_deduct + "}";
+				+ proxy_value + ", proxy_level:" + proxy_level + ", product_id:" + product_id + ", p_counts:" + p_counts
+				+ ", product_proxy_price:" + product_proxy_price + ", p_t_price:" + p_t_price + ", order_id:" + order_id
+				+ ", o_deduct:" + o_deduct + "}";
 	}
 
 }

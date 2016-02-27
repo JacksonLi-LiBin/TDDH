@@ -199,6 +199,7 @@ public class OrderDaoImpl implements OrderDao {
 		} catch (Exception e) {
 			try {
 				conn.rollback();
+				e.printStackTrace();
 				return "false";
 			} catch (Exception e2) {
 			}
@@ -252,6 +253,7 @@ public class OrderDaoImpl implements OrderDao {
 		} catch (Exception e) {
 			try {
 				conn.rollback();
+				e.printStackTrace();
 				return "false";
 			} catch (Exception e2) {
 			}
