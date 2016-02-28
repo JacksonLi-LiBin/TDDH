@@ -49,7 +49,7 @@ public interface OrderDao {
 	 *            0 pay online 1 pay offline
 	 * @return
 	 */
-	public String applyForProductProxy(int userId, int recommendProxyId, int productId, int productCounts,
+	public String applyForProductProxy(int userId, String recommendProxyId, int productId, int productCounts,
 			int proxyLevel, int payType);
 
 	/**

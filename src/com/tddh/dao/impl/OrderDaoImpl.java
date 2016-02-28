@@ -123,7 +123,7 @@ public class OrderDaoImpl implements OrderDao {
 	}
 
 	@Override
-	public String applyForProductProxy(int userId, int recommendProxyId, int productId, int productCounts,
+	public String applyForProductProxy(int userId, String recommendProxyId, int productId, int productCounts,
 			int proxyLevel, int payType) {
 		Connection conn = null;
 		try {

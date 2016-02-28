@@ -5,7 +5,6 @@ import java.util.List;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
@@ -96,17 +95,11 @@ public class UserRestful {
 	@POST
 	@Produces(MediaType.TEXT_PLAIN)
 	@Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
-	// public String applyForProductProxy(@QueryParam("userId") int userId,
-	// @QueryParam("rpId") int rpId,
-	// @QueryParam("productId") int productId, @QueryParam("productCounts") int
-	// productCounts,
-	// @QueryParam("proxyLevel") int proxyLevel, @QueryParam("payType") int
-	// payType) {
 	public String applyForProductProxy(ApplyUserProductModel applyUserProduct) {
-		// String apply_response = odi.applyForProductProxy(userId, rpId,
-		// productId, productCounts, proxyLevel, payType);
-		// return apply_response;
-		System.out.println("----->" + applyUserProduct);
-		return "true";
+		String apply_response = odi.applyForProductProxy(applyUserProduct.getUserId(), applyUserProduct.getRpId(),
+				applyUserProduct.getProxyProduct().getProductId(),
+				applyUserProduct.getProxyProduct().getProductCounts(), applyUserProduct.getProxyLevel(),
+				applyUserProduct.getPayType());
+		return apply_response;
 	}
 }
