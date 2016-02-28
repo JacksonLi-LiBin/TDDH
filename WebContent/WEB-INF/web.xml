@@ -23,6 +23,15 @@
 		<filter-name>Set Character Encoding</filter-name>
 		<url-pattern>/*</url-pattern>
 	</filter-mapping>
+	<filter>
+		<display-name>CrossDomainRequestFilter</display-name>
+		<filter-name>CrossDomainRequestFilter</filter-name>
+		<filter-class>com.tddh.filters.CrossDomainRequestFilter</filter-class>
+	</filter>
+	<filter-mapping>
+		<filter-name>CrossDomainRequestFilter</filter-name>
+		<url-pattern>/rest/*</url-pattern>
+	</filter-mapping>
 	<servlet>
 		<servlet-name>Jersey REST Service</servlet-name>
 		<servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
@@ -36,13 +45,4 @@
 		<servlet-name>Jersey REST Service</servlet-name>
 		<url-pattern>/rest/*</url-pattern>
 	</servlet-mapping>
-	<filter>
-		<display-name>CrossDomainRequestFilter</display-name>
-		<filter-name>CrossDomainRequestFilter</filter-name>
-		<filter-class>com.tddh.filters.CrossDomainRequestFilter</filter-class>
-	</filter>
-	<filter-mapping>
-		<filter-name>CrossDomainRequestFilter</filter-name>
-		<url-pattern>/rest/*</url-pattern>
-	</filter-mapping>
 </web-app>

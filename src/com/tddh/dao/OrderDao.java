@@ -2,6 +2,7 @@ package com.tddh.dao;
 
 import java.util.List;
 
+import com.tddh.model.ApplyOrderProductModel;
 import com.tddh.model.UserSubordinateRecommendOrderModel;
 
 /**
@@ -12,22 +13,15 @@ import com.tddh.model.UserSubordinateRecommendOrderModel;
  */
 public interface OrderDao {
 	/**
-	 * add new order into database
+	 * purchase new order
 	 * 
-	 * @param orderId
 	 * @param userId
-	 * @param userAddressId
-	 * @param productId
-	 * @param orderCounts
-	 * @param orderCreateTime
-	 * @param orderPayTime
-	 * @param orderSubmitState
-	 * @param orderState
-	 * @param orderSellerId
+	 * @param addressId
+	 * @param purchaseProducts
+	 * @param payType
 	 * @return
 	 */
-	public boolean addNewOrder(int orderId, int userId, int userAddressId, int productId, int orderCounts,
-			String orderCreateTime, String orderPayTime, int orderSubmitState, int orderState, int orderSellerId);
+	public boolean purchaseOrder(int userId, List<ApplyOrderProductModel> purchaseProducts, int addressId, int payType);
 
 	/**
 	 * get user order
@@ -38,6 +32,18 @@ public interface OrderDao {
 	 * @return
 	 */
 	public String getOrderDetail(int orderType, int userId);
+
+	/**
+	 * get user subordinate or recommend product proxy order
+	 * 
+	 * @param reqType
+	 *            0 subordinate 1 recommend
+	 * @param userId
+	 * @param productId
+	 * @return
+	 */
+	public List<UserSubordinateRecommendOrderModel> getMySubordinateRecommendOrder(Integer reqType, Integer userId,
+			Integer productId);
 
 	/**
 	 * 
@@ -53,14 +59,14 @@ public interface OrderDao {
 			int proxyLevel, int payType);
 
 	/**
-	 * get user subordinate or recommend product proxy order
 	 * 
-	 * @param reqType
-	 *            0 subordinate 1 recommend
 	 * @param userId
 	 * @param productId
+	 * @param productCounts
+	 * @param proxyLevel
+	 * @param payType
+	 *            0 pay online 1 pay offline
 	 * @return
 	 */
-	public List<UserSubordinateRecommendOrderModel> getMySubordinateRecommendOrder(Integer reqType, Integer userId,
-			Integer productId);
+	public String upgradeProductProxy(int userId, int productId, int productCounts, int proxyLevel, int payType);
 }

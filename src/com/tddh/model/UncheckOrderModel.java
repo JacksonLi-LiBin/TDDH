@@ -3,8 +3,8 @@ package com.tddh.model;
 import java.io.Serializable;
 
 /**
- * unchecked order order_type 0 apply for product proxy permission 1 purchase
- * product
+ * unchecked order order_type 0 apply for product proxy permission 1 purchase 2
+ * upgrade product proxy product
  * 
  * @author jacks
  *

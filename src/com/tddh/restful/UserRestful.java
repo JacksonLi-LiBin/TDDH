@@ -55,6 +55,12 @@ public class UserRestful {
 		return userModel;
 	}
 
+	/**
+	 * get user all purchase amount
+	 * 
+	 * @param userId
+	 * @return
+	 */
 	@Path("/loadUserPurchaseAmount")
 	@GET
 	@Produces(MediaType.TEXT_PLAIN)
@@ -91,6 +97,12 @@ public class UserRestful {
 		return list;
 	}
 
+	/**
+	 * user apply for product proxy
+	 * 
+	 * @param applyUserProduct
+	 * @return
+	 */
 	@Path("/applyForProductProxy")
 	@POST
 	@Produces(MediaType.TEXT_PLAIN)
@@ -101,5 +113,21 @@ public class UserRestful {
 				applyUserProduct.getProxyProduct().getProductCounts(), applyUserProduct.getProxyLevel(),
 				applyUserProduct.getPayType());
 		return apply_response;
+	}
+
+	/**
+	 * user apply for upgrading product proxy level
+	 * 
+	 * @param applyUserProduct
+	 * @return
+	 */
+	@Path("/upgradeProductProxy")
+	@POST
+	@Produces(MediaType.TEXT_PLAIN)
+	@Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+	public String upgradeProductProxy(ApplyUserProductModel applyUserProduct) {
+		return odi.upgradeProductProxy(applyUserProduct.getUserId(), applyUserProduct.getProxyProduct().getProductId(),
+				applyUserProduct.getProxyProduct().getProductCounts(), applyUserProduct.getProxyLevel(),
+				applyUserProduct.getPayType());
 	}
 }

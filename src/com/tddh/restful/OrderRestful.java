@@ -2,13 +2,16 @@ package com.tddh.restful;
 
 import java.util.List;
 
+import javax.ws.rs.Consumes;
 import javax.ws.rs.GET;
+import javax.ws.rs.POST;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import com.tddh.dao.impl.OrderDaoImpl;
+import com.tddh.model.PurchaseUserProductModel;
 import com.tddh.model.UserSubordinateRecommendOrderModel;
 
 /**
@@ -54,5 +57,14 @@ public class OrderRestful {
 				productId);
 		return models;
 
+	}
+
+	@Path("/purchaseProduct")
+	@POST
+	@Produces(MediaType.TEXT_PLAIN)
+	@Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
+	public String purchaseProduct(PurchaseUserProductModel purchaseUserProductModel) {
+		return odi.purchaseOrder(purchaseUserProductModel.getUserId(), purchaseUserProductModel.getPurchaseProducts(),
+				purchaseUserProductModel.getAddressId(), purchaseUserProductModel.getPayType()) ? "true" : "false";
 	}
 }
