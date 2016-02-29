@@ -268,6 +268,7 @@ public class OrderDaoImpl implements OrderDao {
 		try {
 			conn.setAutoCommit(false);
 			Object[] newOrderParams = { orderId, userId, createTime, null, 0, 0, userDefaultAddressId, null, null };
+			queryRunner.update(conn, PropertiesUtils.readProperties("sql", "add_new_order"), newOrderParams);
 			ProxyProductModel proxyProductModel = queryRunner.query(conn,
 					PropertiesUtils.readProperties("sql", "load_product_by_proxy"),
 					new BeanHandler<ProxyProductModel>(ProxyProductModel.class), productId, proxyId);
@@ -275,17 +276,22 @@ public class OrderDaoImpl implements OrderDao {
 					PropertiesUtils.readProperties("sql", "get_proxy_percent"),
 					new BeanHandler<ProxyRecomendPercentModel>(ProxyRecomendPercentModel.class), proxyLevel);
 			Double total_price = (proxyProductModel.getProduct_proxy_price() * productCounts);
-			Double deduct = total_price * Double.parseDouble(proxyRecomendPercentModel.getDeduct_percent());
+			UserProxyProductModel recommendProxyProduct = queryRunner.query(conn,
+					PropertiesUtils.readProperties("sql", "user_is_product_proxy"),
+					new BeanHandler<UserProxyProductModel>(UserProxyProductModel.class), recommendId, productId);
+			Double deduct = 0.0d;
+			if (recommendProxyProduct.getUser_superior_id() != null) {
+				deduct = total_price * Double.parseDouble(proxyRecomendPercentModel.getDeduct_percent());
+				Object[] newOrderDeductParams = { orderId, recommendId, productId, deduct, 0 };
+				queryRunner.update(conn, PropertiesUtils.readProperties("sql", "add_new_order_deduct"),
+						newOrderDeductParams);
+			}
 			Object[] newOrderProductParams = { orderId, productId, productCounts,
 					proxyProductModel.getProduct_proxy_price(), (total_price - deduct) };
-			Object[] newOrderDeductParams = { orderId, recommendId, productId, deduct, 0 };
 			Object[] newProxyProductParams = { userId, productId, proxyId, superiorId, recommendId, 0 };
 			Object[] uncheckOrderParams = { orderId, 0 };
-			queryRunner.update(conn, PropertiesUtils.readProperties("sql", "add_new_order"), newOrderParams);
 			queryRunner.update(conn, PropertiesUtils.readProperties("sql", "add_new_order_product"),
 					newOrderProductParams);
-			queryRunner.update(conn, PropertiesUtils.readProperties("sql", "add_new_order_deduct"),
-					newOrderDeductParams);
 			queryRunner.update(conn, PropertiesUtils.readProperties("sql", "user_add_new_product_proxy"),
 					newProxyProductParams);
 			queryRunner.update(conn, PropertiesUtils.readProperties("sql", "add_new_uncheck_order"),
@@ -433,13 +439,18 @@ public class OrderDaoImpl implements OrderDao {
 			Double total_price = (proxyProductModel.getProduct_proxy_price() * productCounts);
 			Double deduct = 0.0d;
 			if (recommendId != null) {
-				ProxyRecomendPercentModel proxyRecomendPercentModel = queryRunner.query(conn,
-						PropertiesUtils.readProperties("sql", "get_proxy_percent"),
-						new BeanHandler<ProxyRecomendPercentModel>(ProxyRecomendPercentModel.class), proxyLevel);
-				deduct = total_price * Double.parseDouble(proxyRecomendPercentModel.getDeduct_percent());
-				Object[] newOrderDeductParams = { orderId, recommendId, productId, deduct, 0 };
-				queryRunner.update(conn, PropertiesUtils.readProperties("sql", "add_new_order_deduct"),
-						newOrderDeductParams);
+				UserProxyProductModel recommendProxyProduct = queryRunner.query(conn,
+						PropertiesUtils.readProperties("sql", "user_is_product_proxy"),
+						new BeanHandler<UserProxyProductModel>(UserProxyProductModel.class), recommendId, productId);
+				if (recommendProxyProduct.getUser_superior_id() != null) {
+					ProxyRecomendPercentModel proxyRecomendPercentModel = queryRunner.query(conn,
+							PropertiesUtils.readProperties("sql", "get_proxy_percent"),
+							new BeanHandler<ProxyRecomendPercentModel>(ProxyRecomendPercentModel.class), proxyLevel);
+					deduct = total_price * Double.parseDouble(proxyRecomendPercentModel.getDeduct_percent());
+					Object[] newOrderDeductParams = { orderId, recommendId, productId, deduct, 0 };
+					queryRunner.update(conn, PropertiesUtils.readProperties("sql", "add_new_order_deduct"),
+							newOrderDeductParams);
+				}
 			}
 			Object[] newOrderProductParams = { orderId, productId, productCounts,
 					proxyProductModel.getProduct_proxy_price(), (total_price - deduct) };
