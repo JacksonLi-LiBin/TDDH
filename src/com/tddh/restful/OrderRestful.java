@@ -12,6 +12,7 @@ import javax.ws.rs.core.MediaType;
 
 import com.tddh.dao.impl.OrderDaoImpl;
 import com.tddh.model.PurchaseUserProductModel;
+import com.tddh.model.UncheckUserOrderModel;
 import com.tddh.model.UserSubordinateRecommendOrderModel;
 
 /**
@@ -34,7 +35,7 @@ public class OrderRestful {
 	@Path("/loadOrders")
 	@GET
 	@Produces(MediaType.TEXT_PLAIN)
-	public String loadOrders(@QueryParam("order_type") int orderType, @QueryParam("user_id") int userId) {
+	public String loadOrders(@QueryParam("orderType") int orderType, @QueryParam("userId") int userId) {
 		String userOrder = odi.getOrderDetail(orderType, userId);
 		return userOrder;
 	}
@@ -59,6 +60,12 @@ public class OrderRestful {
 
 	}
 
+	/**
+	 * user purchase products
+	 * 
+	 * @param purchaseUserProductModel
+	 * @return
+	 */
 	@Path("/purchaseProduct")
 	@POST
 	@Produces(MediaType.TEXT_PLAIN)
@@ -66,5 +73,36 @@ public class OrderRestful {
 	public String purchaseProduct(PurchaseUserProductModel purchaseUserProductModel) {
 		return odi.purchaseOrder(purchaseUserProductModel.getUserId(), purchaseUserProductModel.getPurchaseProducts(),
 				purchaseUserProductModel.getAddressId(), purchaseUserProductModel.getPayType()) ? "true" : "false";
+	}
+
+	/**
+	 * administrator get unchecked orders
+	 * 
+	 * @param orderType
+	 * @return
+	 */
+	@Path("/loadUncheckOrder")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public List<UncheckUserOrderModel> loadUncheckOrder(@QueryParam("orderType") int orderType) {
+		List<UncheckUserOrderModel> orders = odi.getUncheckUserOrder(orderType);
+		return orders;
+	}
+
+	/**
+	 * 
+	 * @param orderId
+	 * @param orderType
+	 * @param handleType
+	 *            0 pass 1 reject
+	 * @return
+	 */
+	@Path("/handleUncheckOrder")
+	@GET
+	@Produces(MediaType.TEXT_PLAIN)
+	public String handleUncheckOrder(@QueryParam("orderId") int orderId, @QueryParam("orderType") int orderType,
+			@QueryParam("handleType") int handleType) {
+
+		return "false";
 	}
 }

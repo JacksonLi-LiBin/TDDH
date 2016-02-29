@@ -3,6 +3,7 @@ package com.tddh.dao;
 import java.util.List;
 
 import com.tddh.model.ApplyOrderProductModel;
+import com.tddh.model.UncheckUserOrderModel;
 import com.tddh.model.UserSubordinateRecommendOrderModel;
 
 /**
@@ -69,4 +70,12 @@ public interface OrderDao {
 	 * @return
 	 */
 	public String upgradeProductProxy(int userId, int productId, int productCounts, int proxyLevel, int payType);
+
+	/**
+	 * 
+	 * @param orderType
+	 *            0 apply order 1 purchase order 2 upgrade order
+	 * @return
+	 */
+	public List<UncheckUserOrderModel> getUncheckUserOrder(int orderType);
 }

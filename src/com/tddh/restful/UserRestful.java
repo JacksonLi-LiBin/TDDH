@@ -126,8 +126,10 @@ public class UserRestful {
 	@Produces(MediaType.TEXT_PLAIN)
 	@Consumes({ MediaType.APPLICATION_JSON, MediaType.APPLICATION_XML })
 	public String upgradeProductProxy(ApplyUserProductModel applyUserProduct) {
-		return odi.upgradeProductProxy(applyUserProduct.getUserId(), applyUserProduct.getProxyProduct().getProductId(),
+		String upgradeResponse = odi.upgradeProductProxy(applyUserProduct.getUserId(),
+				applyUserProduct.getProxyProduct().getProductId(),
 				applyUserProduct.getProxyProduct().getProductCounts(), applyUserProduct.getProxyLevel(),
 				applyUserProduct.getPayType());
+		return upgradeResponse;
 	}
 }

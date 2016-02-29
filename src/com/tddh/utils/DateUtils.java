@@ -7,7 +7,7 @@ public class DateUtils {
 
 	public static SimpleDateFormat getDateFormat() {
 		if (sdf == null) {
-			sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+			sdf = new SimpleDateFormat("yyyy-MM-dd HH:mm:ss");
 		}
 		return sdf;
 	}

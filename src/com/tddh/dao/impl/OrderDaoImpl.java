@@ -16,10 +16,13 @@ import org.apache.commons.dbutils.handlers.BeanListHandler;
 import com.tddh.dao.OrderDao;
 import com.tddh.db.utils.DBConnectionUtils;
 import com.tddh.model.ApplyOrderProductModel;
+import com.tddh.model.ProductModel;
 import com.tddh.model.ProxyModel;
 import com.tddh.model.ProxyOrderModel;
 import com.tddh.model.ProxyProductModel;
 import com.tddh.model.ProxyRecomendPercentModel;
+import com.tddh.model.UncheckUserOrderModel;
+import com.tddh.model.UncheckUserOrderProductModel;
 import com.tddh.model.UserAddressModel;
 import com.tddh.model.UserModel;
 import com.tddh.model.UserProxyModel;
@@ -237,7 +240,7 @@ public class OrderDaoImpl implements OrderDao {
 					}
 				}
 			} else {
-				return "already_applied";
+				return "false";
 			}
 		} catch (Exception e) {
 			try {
@@ -465,5 +468,76 @@ public class OrderDaoImpl implements OrderDao {
 			}
 		}
 		return "false";
+	}
+
+	@SuppressWarnings({ "rawtypes", "unchecked" })
+	@Override
+	public List<UncheckUserOrderModel> getUncheckUserOrder(int orderType) {
+		Connection conn = null;
+		try {
+			conn = DBConnectionUtils.getConnection();
+			List<UncheckUserOrderProductModel> models = queryRunner.query(conn,
+					PropertiesUtils.readProperties("sql", "load_uncheck_order_pay_offline"),
+					new BeanListHandler<UncheckUserOrderProductModel>(UncheckUserOrderProductModel.class), orderType);
+			if (models == null || models.size() == 0) {
+				return null;
+			} else {
+				Map<Integer, List<UncheckUserOrderProductModel>> uncheckOrder = new HashMap<Integer, List<UncheckUserOrderProductModel>>();
+				List<UncheckUserOrderModel> uncheckOrders = new ArrayList<UncheckUserOrderModel>();
+				for (UncheckUserOrderProductModel model : models) {
+					boolean flag = false;
+					Iterator iterator = uncheckOrder.entrySet().iterator();
+					while (iterator.hasNext()) {
+						Map.Entry<Integer, List<UncheckUserOrderProductModel>> entry = (Entry<Integer, List<UncheckUserOrderProductModel>>) iterator
+								.next();
+						if (entry.getKey() == model.getOrder_id()) {
+							List<UncheckUserOrderProductModel> list = entry.getValue();
+							list.add(model);
+							flag = true;
+							break;
+						}
+					}
+					if (!flag) {
+						List<UncheckUserOrderProductModel> list = new ArrayList<UncheckUserOrderProductModel>();
+						list.add(model);
+						uncheckOrder.put(model.getOrder_id(), list);
+					}
+				}
+				Iterator iterator = uncheckOrder.entrySet().iterator();
+				while (iterator.hasNext()) {
+					Map.Entry<Integer, List<UncheckUserOrderProductModel>> entry = (Entry<Integer, List<UncheckUserOrderProductModel>>) iterator
+							.next();
+					List<UncheckUserOrderProductModel> list = entry.getValue();
+					List<ProductModel> products = new ArrayList<ProductModel>();
+					for (UncheckUserOrderProductModel model : list) {
+						ProductModel productModel = new ProductModel();
+						productModel.setProduct_id(model.getProduct_id());
+						productModel.setProduct_name(model.getProduct_name());
+						products.add(productModel);
+					}
+					UncheckUserOrderModel uncheckUserOrderModel = new UncheckUserOrderModel();
+					uncheckUserOrderModel.setOrder_id(list.get(0).getOrder_id());
+					uncheckUserOrderModel.setOrder_type(list.get(0).getOrder_type());
+					uncheckUserOrderModel.setOrder_create_time(list.get(0).getOrder_create_time());
+					uncheckUserOrderModel.setUser_id(list.get(0).getUser_id());
+					uncheckUserOrderModel.setUser_name(list.get(0).getUser_name());
+					uncheckUserOrderModel.setUser_nickname(list.get(0).getUser_nickname());
+					uncheckUserOrderModel.setProductModels(products);
+
+					uncheckOrders.add(uncheckUserOrderModel);
+				}
+				return uncheckOrders;
+			}
+		} catch (Exception e) {
+			return null;
+		} finally {
+			try {
+				if (conn != null) {
+					conn.close();
+					conn = null;
+				}
+			} catch (Exception e2) {
+			}
+		}
 	}
 }
