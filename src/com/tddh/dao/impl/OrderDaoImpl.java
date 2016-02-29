@@ -27,6 +27,7 @@ import com.tddh.model.UncheckUserOrderModel;
 import com.tddh.model.UncheckUserOrderProductModel;
 import com.tddh.model.UserAddressModel;
 import com.tddh.model.UserModel;
+import com.tddh.model.UserPreviousProductProxyModel;
 import com.tddh.model.UserProxyModel;
 import com.tddh.model.UserProxyProductModel;
 import com.tddh.model.UserSubordinateRecommendOrderModel;
@@ -132,7 +133,7 @@ public class OrderDaoImpl implements OrderDao {
 					while (iterator.hasNext()) {
 						Map.Entry<Integer, List<ProxyOrderModel>> entry = (Entry<Integer, List<ProxyOrderModel>>) iterator
 								.next();
-						if (entry.getKey() == proxyOrderModel.getOrder_id()) {
+						if (("" + entry.getKey()).equals("" + proxyOrderModel.getOrder_id())) {
 							List<ProxyOrderModel> poms = entry.getValue();
 							poms.add(proxyOrderModel);
 							flag = true;
@@ -378,7 +379,8 @@ public class OrderDaoImpl implements OrderDao {
 			if (userProductProxy.getUser_superior_id() == null) {
 				// no superior proxy update proxy level directly
 				return upgradeProductProxy(conn, orderId, userId, createTime, userDefaultAddressId, productId,
-						userProductProxy.getProxy_id(), levelProxy.getProxy_id(), proxyLevel, productCounts, null,
+						userProductProxy.getProxy_id(), userProductProxy.getUser_superior_id(),
+						levelProxy.getProxy_id(), proxyLevel, productCounts, null,
 						userProductProxy.getUser_recommend_id(), payType);
 			} else {
 				UserProxyProductModel superiorProductProxy = queryRunner.query(conn,
@@ -391,12 +393,14 @@ public class OrderDaoImpl implements OrderDao {
 				if (superiorProxy.getProxy_level() < proxyLevel) {
 					// do not change superior proxy user
 					return upgradeProductProxy(conn, orderId, userId, createTime, userDefaultAddressId, productId,
-							userProductProxy.getProxy_id(), levelProxy.getProxy_id(), proxyLevel, productCounts,
-							userProductProxy.getUser_superior_id(), userProductProxy.getUser_recommend_id(), payType);
+							userProductProxy.getProxy_id(), userProductProxy.getUser_superior_id(),
+							levelProxy.getProxy_id(), proxyLevel, productCounts, userProductProxy.getUser_superior_id(),
+							userProductProxy.getUser_recommend_id(), payType);
 				} else {
 					// change superior user to company
 					return upgradeProductProxy(conn, orderId, userId, createTime, userDefaultAddressId, productId,
-							userProductProxy.getProxy_id(), levelProxy.getProxy_id(), proxyLevel, productCounts, null,
+							userProductProxy.getProxy_id(), userProductProxy.getUser_superior_id(),
+							levelProxy.getProxy_id(), proxyLevel, productCounts, null,
 							userProductProxy.getUser_recommend_id(), payType);
 				}
 			}
@@ -414,12 +418,13 @@ public class OrderDaoImpl implements OrderDao {
 	}
 
 	private String upgradeProductProxy(Connection conn, Integer orderId, Integer userId, String createTime,
-			Integer userDefaultAddressId, Integer productId, Integer prevProxyId, Integer proxyId, Integer proxyLevel,
-			Integer productCounts, Integer superiorId, Integer recommendId, Integer payType) {
+			Integer userDefaultAddressId, Integer productId, Integer prevProxyId, Integer prevSuperiorId,
+			Integer proxyId, Integer proxyLevel, Integer productCounts, Integer superiorId, Integer recommendId,
+			Integer payType) {
 		try {
 			conn.setAutoCommit(false);
 			Object[] newOrderParams = { orderId, userId, createTime, null, 0, 0, userDefaultAddressId, null, null };
-			Object[] prevProxyParams = { userId, productId, prevProxyId };
+			Object[] prevProxyParams = { userId, productId, prevProxyId, prevSuperiorId };
 			Object[] uncheckOrderParams = { orderId, 2 };
 			ProxyProductModel proxyProductModel = queryRunner.query(conn,
 					PropertiesUtils.readProperties("sql", "load_product_by_proxy"),
@@ -492,7 +497,7 @@ public class OrderDaoImpl implements OrderDao {
 					while (iterator.hasNext()) {
 						Map.Entry<Integer, List<UncheckUserOrderProductModel>> entry = (Entry<Integer, List<UncheckUserOrderProductModel>>) iterator
 								.next();
-						if (entry.getKey() == model.getOrder_id()) {
+						if (("" + entry.getKey()).equals("" + model.getOrder_id())) {
 							List<UncheckUserOrderProductModel> list = entry.getValue();
 							list.add(model);
 							flag = true;
@@ -525,7 +530,6 @@ public class OrderDaoImpl implements OrderDao {
 					uncheckUserOrderModel.setUser_name(list.get(0).getUser_name());
 					uncheckUserOrderModel.setUser_nickname(list.get(0).getUser_nickname());
 					uncheckUserOrderModel.setProductModels(products);
-
 					uncheckOrders.add(uncheckUserOrderModel);
 				}
 				return uncheckOrders;
@@ -551,11 +555,11 @@ public class OrderDaoImpl implements OrderDao {
 			conn.setAutoCommit(false);
 			OrderModel orderModel = queryRunner.query(conn, PropertiesUtils.readProperties("sql", "load_order_by_id"),
 					new BeanHandler<OrderModel>(OrderModel.class), orderId);
+			OrderProductModel orderProductModel = queryRunner.query(conn,
+					PropertiesUtils.readProperties("sql", "load_order_product"),
+					new BeanHandler<OrderProductModel>(OrderProductModel.class), orderId);
 			switch (orderType) {
 			case 0:// apply order
-				OrderProductModel orderProductModel = queryRunner.query(conn,
-						PropertiesUtils.readProperties("sql", "load_order_product"),
-						new BeanHandler<OrderProductModel>(OrderProductModel.class), orderId);
 				if (handleType == 0) {// pass
 					queryRunner.update(conn, PropertiesUtils.readProperties("sql", "pass_apply_proxy_product"),
 							orderModel.getOrder_user_id(), orderProductModel.getProduct_id());
@@ -576,10 +580,50 @@ public class OrderDaoImpl implements OrderDao {
 				}
 				break;
 			case 1:// purchase order
-
+				if (handleType == 0) {
+					queryRunner.update(conn, PropertiesUtils.readProperties("sql", "remove_uncheck_order_by_id"),
+							orderId);
+					queryRunner.update(conn, PropertiesUtils.readProperties("sql", "pass_proxy_product_deduct"),
+							orderId);
+					queryRunner.update(conn, PropertiesUtils.readProperties("sql", "pass_proxy_product_order"),
+							DateUtils.getDateFormat().format(new Date()), orderId);
+				} else {
+					queryRunner.update(conn, PropertiesUtils.readProperties("sql", "remove_uncheck_order_by_id"),
+							orderId);
+					queryRunner.update(conn, PropertiesUtils.readProperties("sql", "remove_order_product"), orderId);
+					queryRunner.update(conn, PropertiesUtils.readProperties("sql", "remove_user_deduct"), orderId);
+					queryRunner.update(conn, PropertiesUtils.readProperties("sql", "remove_order"), orderId);
+				}
 				break;
 			case 2:// upgrade order
-
+				if (handleType == 0) {// pass
+					queryRunner.update(conn, PropertiesUtils.readProperties("sql", "remove_user_prev_product_proxy"),
+							orderModel.getOrder_user_id(), orderProductModel.getProduct_id());
+					queryRunner.update(conn, PropertiesUtils.readProperties("sql", "pass_apply_proxy_product"),
+							orderModel.getOrder_user_id(), orderProductModel.getProduct_id());
+					queryRunner.update(conn, PropertiesUtils.readProperties("sql", "remove_uncheck_order_by_id"),
+							orderId);
+					queryRunner.update(conn, PropertiesUtils.readProperties("sql", "pass_proxy_product_deduct"),
+							orderId);
+					queryRunner.update(conn, PropertiesUtils.readProperties("sql", "pass_proxy_product_order"),
+							DateUtils.getDateFormat().format(new Date()), orderId);
+				} else {// reject
+					UserPreviousProductProxyModel previousProductProxyModel = queryRunner.query(conn,
+							PropertiesUtils.readProperties("sql", "load_user_prev_product_proxy"),
+							new BeanHandler<UserPreviousProductProxyModel>(UserPreviousProductProxyModel.class),
+							orderModel.getOrder_user_id(), orderProductModel.getProduct_id());
+					queryRunner.update(conn, PropertiesUtils.readProperties("sql", "backup_apply_proxy_product"),
+							previousProductProxyModel.getPrevious_proxy_id(),
+							previousProductProxyModel.getPrevious_superior_id(), orderModel.getOrder_user_id(),
+							orderProductModel.getProduct_id());
+					queryRunner.update(conn, PropertiesUtils.readProperties("sql", "remove_uncheck_order_by_id"),
+							orderId);
+					queryRunner.update(conn, PropertiesUtils.readProperties("sql", "remove_user_prev_product_proxy"),
+							orderModel.getOrder_user_id(), orderProductModel.getProduct_id());
+					queryRunner.update(conn, PropertiesUtils.readProperties("sql", "remove_order_product"), orderId);
+					queryRunner.update(conn, PropertiesUtils.readProperties("sql", "remove_user_deduct"), orderId);
+					queryRunner.update(conn, PropertiesUtils.readProperties("sql", "remove_order"), orderId);
+				}
 				break;
 			}
 			conn.commit();
