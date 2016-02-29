@@ -78,4 +78,15 @@ public interface OrderDao {
 	 * @return
 	 */
 	public List<UncheckUserOrderModel> getUncheckUserOrder(int orderType);
+
+	/**
+	 * 
+	 * @param orderId
+	 * @param orderType
+	 *            0 apply order 1 purchase order 2 upgrade order
+	 * @param handleType
+	 *            0 pass 1 reject
+	 * @return
+	 */
+	public boolean handleUncheckOrder(int orderId, int orderType, int handleType);
 }

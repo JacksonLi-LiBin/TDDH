@@ -16,6 +16,8 @@ import org.apache.commons.dbutils.handlers.BeanListHandler;
 import com.tddh.dao.OrderDao;
 import com.tddh.db.utils.DBConnectionUtils;
 import com.tddh.model.ApplyOrderProductModel;
+import com.tddh.model.OrderModel;
+import com.tddh.model.OrderProductModel;
 import com.tddh.model.ProductModel;
 import com.tddh.model.ProxyModel;
 import com.tddh.model.ProxyOrderModel;
@@ -539,5 +541,64 @@ public class OrderDaoImpl implements OrderDao {
 			} catch (Exception e2) {
 			}
 		}
+	}
+
+	@Override
+	public boolean handleUncheckOrder(int orderId, int orderType, int handleType) {
+		Connection conn = null;
+		try {
+			conn = DBConnectionUtils.getConnection();
+			conn.setAutoCommit(false);
+			OrderModel orderModel = queryRunner.query(conn, PropertiesUtils.readProperties("sql", "load_order_by_id"),
+					new BeanHandler<OrderModel>(OrderModel.class), orderId);
+			switch (orderType) {
+			case 0:// apply order
+				OrderProductModel orderProductModel = queryRunner.query(conn,
+						PropertiesUtils.readProperties("sql", "load_order_product"),
+						new BeanHandler<OrderProductModel>(OrderProductModel.class), orderId);
+				if (handleType == 0) {// pass
+					queryRunner.update(conn, PropertiesUtils.readProperties("sql", "pass_apply_proxy_product"),
+							orderModel.getOrder_user_id(), orderProductModel.getProduct_id());
+					queryRunner.update(conn, PropertiesUtils.readProperties("sql", "remove_uncheck_order_by_id"),
+							orderId);
+					queryRunner.update(conn, PropertiesUtils.readProperties("sql", "pass_proxy_product_deduct"),
+							orderId);
+					queryRunner.update(conn, PropertiesUtils.readProperties("sql", "pass_proxy_product_order"),
+							DateUtils.getDateFormat().format(new Date()), orderId);
+				} else {// reject
+					queryRunner.update(conn, PropertiesUtils.readProperties("sql", "remove_user_apply_proxy_product"),
+							orderModel.getOrder_user_id(), orderProductModel.getProduct_id());
+					queryRunner.update(conn, PropertiesUtils.readProperties("sql", "remove_uncheck_order_by_id"),
+							orderId);
+					queryRunner.update(conn, PropertiesUtils.readProperties("sql", "remove_order_product"), orderId);
+					queryRunner.update(conn, PropertiesUtils.readProperties("sql", "remove_user_deduct"), orderId);
+					queryRunner.update(conn, PropertiesUtils.readProperties("sql", "remove_order"), orderId);
+				}
+				break;
+			case 1:// purchase order
+
+				break;
+			case 2:// upgrade order
+
+				break;
+			}
+			conn.commit();
+			return true;
+		} catch (Exception e) {
+			try {
+				conn.rollback();
+				return false;
+			} catch (Exception e2) {
+			}
+		} finally {
+			try {
+				if (conn != null) {
+					conn.close();
+					conn = null;
+				}
+			} catch (Exception e2) {
+			}
+		}
+		return false;
 	}
 }

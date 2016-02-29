@@ -102,7 +102,6 @@ public class OrderRestful {
 	@Produces(MediaType.TEXT_PLAIN)
 	public String handleUncheckOrder(@QueryParam("orderId") int orderId, @QueryParam("orderType") int orderType,
 			@QueryParam("handleType") int handleType) {
-
-		return "false";
+		return odi.handleUncheckOrder(orderId, orderType, handleType) ? "true" : "false";
 	}
 }
