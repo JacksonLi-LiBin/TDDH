@@ -2,6 +2,7 @@ package com.tddh.dao;
 
 import java.util.List;
 
+import com.tddh.model.ProductCategoryListModel;
 import com.tddh.model.ProductModel;
 import com.tddh.model.ProxyProductModel;
 
@@ -36,4 +37,12 @@ public interface ProductDao {
 	 * @return
 	 */
 	public double getProductOrderPrice(int product_id, int proxy_id);
+
+	/**
+	 * 
+	 * @param categoryId
+	 *            0 最新产品 1 明星产品
+	 * @return
+	 */
+	public List<ProductCategoryListModel> getProductCategoryByCategoryId(int categoryId);
 }

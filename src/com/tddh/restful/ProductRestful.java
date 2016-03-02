@@ -9,6 +9,7 @@ import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
 import com.tddh.dao.impl.ProductDaoImpl;
+import com.tddh.model.ProductCategoryListModel;
 import com.tddh.model.ProductModel;
 import com.tddh.model.ProxyProductModel;
 
@@ -59,5 +60,13 @@ public class ProductRestful {
 			@QueryParam("proxy_id") int proxy_id) {
 		String price = "" + pdi.getProductOrderPrice(product_id, proxy_id);
 		return price;
+	}
+
+	@Path("/loadProductByCatory")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public List<ProductCategoryListModel> loadProductByCatory(@QueryParam("categoryId") int categoryId) {
+		List<ProductCategoryListModel> result = pdi.getProductCategoryByCategoryId(categoryId);
+		return result;
 	}
 }
