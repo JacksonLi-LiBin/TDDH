@@ -34,7 +34,7 @@ public class ProxyDaoImpl implements ProxyDao {
 			try {
 				if (conn != null) {
 					conn.close();
-					conn=null;
+					conn = null;
 				}
 			} catch (Exception e2) {
 			}
