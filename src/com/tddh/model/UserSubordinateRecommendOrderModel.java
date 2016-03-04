@@ -5,7 +5,7 @@ import java.io.Serializable;
 import javax.xml.bind.annotation.XmlRootElement;
 
 /**
- * get user subordinate or recommend user order by user id and product id
+ * get user subordinate or recommend user order by user id
  * 
  * @author jacks
  *
@@ -19,11 +19,8 @@ public class UserSubordinateRecommendOrderModel implements Serializable {
 	private String proxy_value;
 	private Integer proxy_level;
 	private Integer product_id;
-	private Integer p_counts;
-	private Double product_proxy_price;
-	private Double p_t_price;
-	private Integer order_id;
-	private Double o_deduct;
+	private String product_name;
+	private Double total_amount;
 
 	public Integer getUser_id() {
 		return user_id;
@@ -73,52 +70,26 @@ public class UserSubordinateRecommendOrderModel implements Serializable {
 		this.product_id = product_id;
 	}
 
-	public Integer getP_counts() {
-		return p_counts;
+	public String getProduct_name() {
+		return product_name;
 	}
 
-	public void setP_counts(Integer p_counts) {
-		this.p_counts = p_counts;
+	public void setProduct_name(String product_name) {
+		this.product_name = product_name;
 	}
 
-	public Double getProduct_proxy_price() {
-		return product_proxy_price;
+	public Double getTotal_amount() {
+		return total_amount;
 	}
 
-	public void setProduct_proxy_price(Double product_proxy_price) {
-		this.product_proxy_price = product_proxy_price;
-	}
-
-	public Double getP_t_price() {
-		return p_t_price;
-	}
-
-	public void setP_t_price(Double p_t_price) {
-		this.p_t_price = p_t_price;
-	}
-
-	public Integer getOrder_id() {
-		return order_id;
-	}
-
-	public void setOrder_id(Integer order_id) {
-		this.order_id = order_id;
-	}
-
-	public Double getO_deduct() {
-		return o_deduct;
-	}
-
-	public void setO_deduct(Double o_deduct) {
-		this.o_deduct = o_deduct;
+	public void setTotal_amount(Double total_amount) {
+		this.total_amount = total_amount;
 	}
 
 	@Override
 	public String toString() {
 		return "{user_id:" + user_id + ", user_nickname:" + user_nickname + ", proxy_id:" + proxy_id + ", proxy_value:"
-				+ proxy_value + ", proxy_level:" + proxy_level + ", product_id:" + product_id + ", p_counts:" + p_counts
-				+ ", product_proxy_price:" + product_proxy_price + ", p_t_price:" + p_t_price + ", order_id:" + order_id
-				+ ", o_deduct:" + o_deduct + "}";
+				+ proxy_value + ", proxy_level:" + proxy_level + ", product_id:" + product_id + ", product_name:"
+				+ product_name + ", total_amount:" + total_amount + "}";
 	}
-
 }

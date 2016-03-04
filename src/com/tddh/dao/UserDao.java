@@ -3,6 +3,7 @@ package com.tddh.dao;
 import java.util.List;
 
 import com.tddh.model.UserModel;
+import com.tddh.model.UserMoneyModel;
 import com.tddh.model.UserProxyProductDetailModel;
 
 /**
@@ -51,4 +52,12 @@ public interface UserDao {
 	 * @return
 	 */
 	public List<UserProxyProductDetailModel> getUserProxyProductDetail(int userId);
+
+	/**
+	 * get user money
+	 * 
+	 * @param userId
+	 * @return
+	 */
+	public UserMoneyModel getUserMoney(int userId);
 }

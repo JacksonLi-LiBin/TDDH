@@ -10,6 +10,7 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.core.MediaType;
 
+import com.alibaba.fastjson.JSON;
 import com.tddh.dao.impl.OrderDaoImpl;
 import com.tddh.model.PurchaseUserProductModel;
 import com.tddh.model.UncheckUserOrderModel;
@@ -51,13 +52,11 @@ public class OrderRestful {
 	 */
 	@Path("/loadUserSROrders")
 	@GET
-	@Produces(MediaType.APPLICATION_JSON)
-	public List<UserSubordinateRecommendOrderModel> loadUserSROrders(@QueryParam("reqType") int reqType,
-			@QueryParam("userId") int userId, @QueryParam("productId") int productId) {
-		List<UserSubordinateRecommendOrderModel> models = odi.getMySubordinateRecommendOrder(reqType, userId,
-				productId);
-		return models;
-
+	@Produces(MediaType.TEXT_PLAIN)
+	public String loadUserSROrders(@QueryParam("reqType") int reqType, @QueryParam("userId") int userId) {
+		List<List<List<UserSubordinateRecommendOrderModel>>> models = odi.getMySubordinateRecommendOrder(reqType,
+				userId);
+		return JSON.toJSONString(models);
 	}
 
 	/**

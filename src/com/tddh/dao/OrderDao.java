@@ -43,8 +43,8 @@ public interface OrderDao {
 	 * @param productId
 	 * @return
 	 */
-	public List<UserSubordinateRecommendOrderModel> getMySubordinateRecommendOrder(Integer reqType, Integer userId,
-			Integer productId);
+	public List<List<List<UserSubordinateRecommendOrderModel>>> getMySubordinateRecommendOrder(Integer reqType,
+			Integer userId);
 
 	/**
 	 * 

@@ -14,6 +14,7 @@ import com.tddh.dao.impl.OrderDaoImpl;
 import com.tddh.dao.impl.UserDaoImpl;
 import com.tddh.model.ApplyUserProductModel;
 import com.tddh.model.UserModel;
+import com.tddh.model.UserMoneyModel;
 import com.tddh.model.UserProxyProductDetailModel;
 
 /**
@@ -131,5 +132,13 @@ public class UserRestful {
 				applyUserProduct.getProxyProduct().getProductCounts(), applyUserProduct.getProxyLevel(),
 				applyUserProduct.getPayType());
 		return upgradeResponse;
+	}
+
+	@Path("/loadUserMoney")
+	@GET
+	@Produces(MediaType.APPLICATION_JSON)
+	public UserMoneyModel loadUserMoney(@QueryParam("userId") int userId) {
+		UserMoneyModel userMoneyModel = udi.getUserMoney(userId);
+		return userMoneyModel;
 	}
 }

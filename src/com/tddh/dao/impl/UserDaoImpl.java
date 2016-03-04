@@ -11,6 +11,7 @@ import com.tddh.db.utils.DBConnectionUtils;
 import com.tddh.model.OrderDeductModel;
 import com.tddh.model.OrderProductModel;
 import com.tddh.model.UserModel;
+import com.tddh.model.UserMoneyModel;
 import com.tddh.model.UserProxyProductDetailModel;
 import com.tddh.utils.PropertiesUtils;
 import java.util.List;
@@ -131,6 +132,28 @@ public class UserDaoImpl implements UserDao {
 					PropertiesUtils.readProperties("sql", "user_proxy_product_detail"),
 					new BeanListHandler<UserProxyProductDetailModel>(UserProxyProductDetailModel.class), userId);
 			return userProxyProductDetailModels;
+		} catch (Exception e) {
+			return null;
+		} finally {
+			try {
+				if (conn != null) {
+					conn.close();
+					conn = null;
+				}
+			} catch (Exception e2) {
+			}
+		}
+	}
+
+	@Override
+	public UserMoneyModel getUserMoney(int userId) {
+		Connection conn = null;
+		try {
+			conn = DBConnectionUtils.getConnection();
+			UserMoneyModel userMoneyModel = queryRunner.query(conn,
+					PropertiesUtils.readProperties("sql", "get_user_money"),
+					new BeanHandler<UserMoneyModel>(UserMoneyModel.class));
+			return userMoneyModel;
 		} catch (Exception e) {
 			return null;
 		} finally {

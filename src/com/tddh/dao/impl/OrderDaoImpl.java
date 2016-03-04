@@ -73,9 +73,14 @@ public class OrderDaoImpl implements OrderDao {
 					queryRunner.update(conn, PropertiesUtils.readProperties("sql", "add_new_order_deduct"),
 							newOrderDeductParams);
 				}
+				if (userProxyProductModel.getUser_superior_id() != null) {
+					Object[] salerOrderParams = { userProxyProductModel.getUser_superior_id(), orderId,
+							purchaseProduct.getProductId(), (totalPrice - deduct) };
+					queryRunner.update(conn, PropertiesUtils.readProperties("sql", "add_saler_order_product"),
+							salerOrderParams);
+				}
 				Object[] newOrderProductParams = { orderId, purchaseProduct.getProductId(),
-						purchaseProduct.getProductCounts(), proxyProductModel.getProduct_proxy_price(),
-						(totalPrice - deduct) };
+						purchaseProduct.getProductCounts(), proxyProductModel.getProduct_proxy_price(), totalPrice };
 				queryRunner.update(conn, PropertiesUtils.readProperties("sql", "add_new_order_product"),
 						newOrderProductParams);
 			}
@@ -295,8 +300,13 @@ public class OrderDaoImpl implements OrderDao {
 							newOrderDeductParams);
 				}
 			}
+			if (superiorId != null) {
+				Object[] salerOrderParams = { superiorId, orderId, productId, (total_price - deduct) };
+				queryRunner.update(conn, PropertiesUtils.readProperties("sql", "add_saler_order_product"),
+						salerOrderParams);
+			}
 			Object[] newOrderProductParams = { orderId, productId, productCounts,
-					proxyProductModel.getProduct_proxy_price(), (total_price - deduct) };
+					proxyProductModel.getProduct_proxy_price(), total_price };
 			Object[] newProxyProductParams = { userId, productId, proxyId, superiorId, recommendId, 0 };
 			Object[] uncheckOrderParams = { orderId, 0 };
 			queryRunner.update(conn, PropertiesUtils.readProperties("sql", "add_new_order_product"),
@@ -332,10 +342,11 @@ public class OrderDaoImpl implements OrderDao {
 	}
 
 	@Override
-	public List<UserSubordinateRecommendOrderModel> getMySubordinateRecommendOrder(Integer reqType, Integer userId,
-			Integer productId) {
+	public List<List<List<UserSubordinateRecommendOrderModel>>> getMySubordinateRecommendOrder(Integer reqType,
+			Integer userId) {
 		Connection conn = null;
 		List<UserSubordinateRecommendOrderModel> orderList = null;
+		List<List<UserSubordinateRecommendOrderModel>> orderModels = null;
 		try {
 			conn = DBConnectionUtils.getConnection();
 			switch (reqType) {
@@ -344,17 +355,66 @@ public class OrderDaoImpl implements OrderDao {
 						PropertiesUtils.readProperties("sql", "load_my_subordinate_product_proxy_order"),
 						new BeanListHandler<UserSubordinateRecommendOrderModel>(
 								UserSubordinateRecommendOrderModel.class),
-						userId, productId);
+						userId);
 				break;
 			case 1:// recommend order
 				orderList = queryRunner.query(conn,
 						PropertiesUtils.readProperties("sql", "load_my_recommend_product_proxy_order"),
 						new BeanListHandler<UserSubordinateRecommendOrderModel>(
 								UserSubordinateRecommendOrderModel.class),
-						userId, productId);
+						userId);
 				break;
 			}
-			return orderList;
+			if (orderList != null && orderList.size() > 0) {
+				orderModels = new ArrayList<List<UserSubordinateRecommendOrderModel>>();
+				List<UserSubordinateRecommendOrderModel> orderModel = null;
+				for (int i = 0; i < orderList.size(); i++) {
+					boolean flag = false;
+					for (int j = 0; j < orderModels.size(); j++) {
+						if (("" + orderList.get(i).getProduct_id())
+								.equals("" + orderModels.get(j).get(0).getProduct_id())) {
+							orderModels.get(j).add(orderList.get(i));
+							flag = true;
+							break;
+						}
+					}
+					if (!flag) {
+						orderModel = new ArrayList<UserSubordinateRecommendOrderModel>();
+						orderModel.add(orderList.get(i));
+						orderModels.add(orderModel);
+					}
+				}
+				List<List<List<UserSubordinateRecommendOrderModel>>> sroModels = null;
+				List<List<UserSubordinateRecommendOrderModel>> subSroModels = null;
+				List<UserSubordinateRecommendOrderModel> subSubSroModels = null;
+				if (orderModels != null && orderModels.size() > 0) {
+					sroModels = new ArrayList<List<List<UserSubordinateRecommendOrderModel>>>();
+					for (int i = 0; i < orderModels.size(); i++) {
+						subSroModels = new ArrayList<List<UserSubordinateRecommendOrderModel>>();
+						for (int j = 0; j < orderModels.get(i).size(); j++) {
+							boolean flag = false;
+							for (int k = 0; k < subSroModels.size(); k++) {
+								for (int l = 0; l < subSroModels.get(k).size(); l++) {
+									if (("" + orderModels.get(i).get(j).getProxy_level())
+											.equals(("" + subSroModels.get(k).get(l).getProxy_level()))) {
+										subSroModels.get(k).add(orderModels.get(i).get(j));
+										flag = true;
+										break;
+									}
+								}
+							}
+							if (!flag) {
+								subSubSroModels = new ArrayList<UserSubordinateRecommendOrderModel>();
+								subSubSroModels.add(orderModels.get(i).get(j));
+								subSroModels.add(subSubSroModels);
+							}
+						}
+						sroModels.add(subSroModels);
+					}
+				}
+				return sroModels;
+			}
+			return null;
 		} catch (Exception e) {
 			return null;
 		} finally {
@@ -461,8 +521,13 @@ public class OrderDaoImpl implements OrderDao {
 							newOrderDeductParams);
 				}
 			}
+			if (superiorId != null) {
+				Object[] salerOrderParams = { superiorId, orderId, productId, (total_price - deduct) };
+				queryRunner.update(conn, PropertiesUtils.readProperties("sql", "add_saler_order_product"),
+						salerOrderParams);
+			}
 			Object[] newOrderProductParams = { orderId, productId, productCounts,
-					proxyProductModel.getProduct_proxy_price(), (total_price - deduct) };
+					proxyProductModel.getProduct_proxy_price(), total_price };
 			queryRunner.update(conn, PropertiesUtils.readProperties("sql", "add_prev_proxy"), prevProxyParams);
 			queryRunner.update(conn, PropertiesUtils.readProperties("sql", "add_new_uncheck_order"),
 					uncheckOrderParams);
@@ -594,6 +659,8 @@ public class OrderDaoImpl implements OrderDao {
 							orderModel.getOrder_user_id(), orderProductModel.getProduct_id());
 					queryRunner.update(conn, PropertiesUtils.readProperties("sql", "remove_uncheck_order_by_id"),
 							orderId);
+					queryRunner.update(conn, PropertiesUtils.readProperties("sql", "remove_saler_order_product"),
+							orderId);
 					queryRunner.update(conn, PropertiesUtils.readProperties("sql", "remove_order_product"), orderId);
 					queryRunner.update(conn, PropertiesUtils.readProperties("sql", "remove_user_deduct"), orderId);
 					queryRunner.update(conn, PropertiesUtils.readProperties("sql", "remove_order"), orderId);
@@ -609,6 +676,8 @@ public class OrderDaoImpl implements OrderDao {
 							DateUtils.getDateFormat().format(new Date()), orderId);
 				} else {
 					queryRunner.update(conn, PropertiesUtils.readProperties("sql", "remove_uncheck_order_by_id"),
+							orderId);
+					queryRunner.update(conn, PropertiesUtils.readProperties("sql", "remove_saler_order_product"),
 							orderId);
 					queryRunner.update(conn, PropertiesUtils.readProperties("sql", "remove_order_product"), orderId);
 					queryRunner.update(conn, PropertiesUtils.readProperties("sql", "remove_user_deduct"), orderId);
@@ -637,6 +706,8 @@ public class OrderDaoImpl implements OrderDao {
 							previousProductProxyModel.getPrevious_superior_id(), orderModel.getOrder_user_id(),
 							orderProductModel.getProduct_id());
 					queryRunner.update(conn, PropertiesUtils.readProperties("sql", "remove_uncheck_order_by_id"),
+							orderId);
+					queryRunner.update(conn, PropertiesUtils.readProperties("sql", "remove_saler_order_product"),
 							orderId);
 					queryRunner.update(conn, PropertiesUtils.readProperties("sql", "remove_user_prev_product_proxy"),
 							orderModel.getOrder_user_id(), orderProductModel.getProduct_id());
